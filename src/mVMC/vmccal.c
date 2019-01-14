@@ -175,6 +175,7 @@ void VMCMainCal(MPI_Comm comm) {
         CalculateGreenFunc(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt);
         db = CalculateDoubleOccupation(eleIdx, eleCfg, eleNum, eleProjCnt);
         Dbtot += w * db/Nsite;
+        Dbtot2 += (w * db * db)/(Nsite * Nsite);
     }
 
     Wc += w;
