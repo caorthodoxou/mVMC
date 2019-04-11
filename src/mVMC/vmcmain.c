@@ -349,6 +349,7 @@ int VMCParaOpt(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
     //initial values of the interaction and time
     Ut = Ui;
     tc = 0.0;
+    for(i=0;i<NCoulombIntra;i++) ParaCoulombIntra[i] = Ut; 
   }
 
   for(step=0;step<NSROptItrStep;step++) {
@@ -364,7 +365,7 @@ int VMCParaOpt(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
         printf("Progress of Optimization: %d%%\n", iprogress);
       }
     }
-    
+
     StartTimer(20);
     //printf("1 DUBUG make:step=%d \n",step);
     if(iFlgOrbitalGeneral==0){//sz is conserved
@@ -373,7 +374,7 @@ int VMCParaOpt(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
       UpdateSlaterElm_fsz();
     } 
     //printf("2 DUBUG make:step=%d \n",step);
-    UpdateQPWeight();
+    //UpdateQPWeight();
     StopTimer(20);
     StartTimer(3);
 #ifdef _DEBUG_DETAIL
@@ -516,7 +517,7 @@ int VMCParaOpt(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
       return info;
     }
 
-    if(RealEvolve==1 && tc<tramp){
+    if(RealEvolve==1){
         tc += DSROptStepDt;
         interaction();
         for(i=0;i<Nsite;i++) ParaCoulombIntra[i] = Ut;
@@ -590,7 +591,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     //Calculation of K1 term
     StartTimer(20);
     UpdateSlaterElm_fcmp();
-    UpdateQPWeight();
+    //UpdateQPWeight();
     StopTimer(20);
 
     StartTimer(3);
@@ -670,7 +671,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     gf=0; /*stops Green's functions being calculated again*/
     StartTimer(20);
     UpdateSlaterElm_fcmp();
-    UpdateQPWeight();
+    //UpdateQPWeight();
     StopTimer(20);
 
     StartTimer(3);
@@ -737,7 +738,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     //Calculation of K3 term
     StartTimer(20);
     UpdateSlaterElm_fcmp();
-    UpdateQPWeight();
+    //UpdateQPWeight();
     StopTimer(20);
 
     StartTimer(3);
@@ -808,7 +809,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 
     StartTimer(20);
     UpdateSlaterElm_fcmp();
-    UpdateQPWeight();
+    //UpdateQPWeight();
     StopTimer(20);
 
     StartTimer(3);
@@ -1061,6 +1062,7 @@ void outputData() {
   }  
   
   if (NVMCCalMode == 1) {
+    fprintf(FileOut, "% .18e % .18e  % .18e % .18e \n", creal(Etot),cimag(Etot), creal(Etot2), creal((Etot2 - Etot*Etot)/(Etot*Etot)));
     /* zvo_cisajs.dat */
     if (NCisAjs > 0) {
       if(NLanczosMode <2) {
