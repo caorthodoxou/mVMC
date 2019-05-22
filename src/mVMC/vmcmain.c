@@ -352,7 +352,7 @@ int VMCParaOpt(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
   if(RealEvolve==1) InitFilePhysCal(0, rank);  
 
   if(RealEvolve==1){
-    NSROptItrStep = (int) round(cycles/DSROptStepDt) + 1;
+    NSROptItrStep = (int) round(cycles*2.*M_PI/(wL*DSROptStepDt)) + 1;
     tc = 0.0;
   }
 
@@ -564,7 +564,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
   
   InitFilePhysCal(0, rank);  
 
-  NSROptItrStep = (int) round(cycles/DSROptStepDt) + 1;
+  NSROptItrStep = (int) round(cycles*2.*M_PI/(wL*DSROptStepDt)) + 1;
   tc = 0.0;
 
   for(step=0;step<NSROptItrStep;step++) {
@@ -1014,7 +1014,7 @@ void WriteToTrans() {
   double complex hopping, phi;
   int i;
 
-  phi = a*F0/wL * pow(sin(M_PI*tc/cycles),2.) * sin(2.*M_PI*tc);
+  phi = a*F0/wL * pow(sin(wL*tc/(2.*cycles)),2.) * sin(wL*tc);
   hopping = cexp(I*phi);
   //printf("%e\n",phi);
   //printf("real hop %e, imag hop %e \n",creal(hopping),cimag(hopping));
