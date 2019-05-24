@@ -581,7 +581,11 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
       }
     }
 
-    for(i=0;i<NPara;i++) Paran[i] = Para_new[i] = Para[i]; 
+    //for(i=0;i<NPara;i++) Paran[i] = Para_new[i] = Para[i]; 
+    for(i=0;i<NPara;i++) {
+      Paran[i] = Para[i];
+      Para_new[i] = Para[i]; 
+    }
 
     //////////////////////////////////
     //Calculation of K1 term
@@ -609,7 +613,6 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     printf("Debug: step %d, AverageWE.\n", step);
 #endif
     Dbtot /= Wc;
-    //etatot /=Wc;
     WeightAverageWE(comm_parent);
     WeightAverageGreenFunc(comm_parent); 
     StartTimer(25);//DEBUG
@@ -694,7 +697,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #endif
     WeightAverageSROpt(comm_parent);
     StopTimer(25);
-    ReduceCounter(comm_child2);
+    //ReduceCounter(comm_child2);
     StopTimer(21);
 
 #ifdef _DEBUG_DUMP_SROPTO_STORE
@@ -761,7 +764,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #endif
     WeightAverageSROpt(comm_parent);
     StopTimer(25);
-    ReduceCounter(comm_child2);
+    //ReduceCounter(comm_child2);
     StopTimer(21);
 
 #ifdef _DEBUG_DUMP_SROPTO_STORE
@@ -832,7 +835,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #endif
     WeightAverageSROpt(comm_parent);
     StopTimer(25);
-    ReduceCounter(comm_child2);
+    //ReduceCounter(comm_child2);
     StopTimer(21);
 
 #ifdef _DEBUG_DUMP_SROPTO_STORE

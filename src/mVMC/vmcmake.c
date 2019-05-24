@@ -47,7 +47,8 @@ void VMCMakeSample(MPI_Comm comm) {
   double complex logIpOld,logIpNew; /* logarithm of inner product <phi|L|x> */ // is this ok ? TBC
   int projCntNew[NProj];
   double complex pfMNew[NQPFull];
-  double complex w,x;  
+  double complex x;  
+  double w;
 
   int qpStart,qpEnd;
   int rejectFlag;
@@ -123,10 +124,13 @@ void VMCMakeSample(MPI_Comm comm) {
         /* Metroplis */
         x = LogProjRatio(projCntNew,TmpEleProjCnt);
         //printf("x imag is %f \n", cimag(x));
-        w = cexp(x+creal(logIpNew-logIpOld));
-        if( !isfinite(creal(w)+cimag(w)) ) w = -1.0; /* should be rejected */
+        w = exp(2.*creal(x+logIpNew-logIpOld));
+        //w = cexp(x+creal(logIpNew-logIpOld));
+        //if( !isfinite(creal(w)+cimag(w)) ) w = -1.0; /* should be rejected */
+        if( !isfinite(w) ) w = -1.0; /* should be rejected */
 
-        if(pow(cabs(w),2) > genrand_real2()) { /* accept */
+        if(w > genrand_real2()) { /* accept */
+        //if(pow(cabs(w),2) > genrand_real2()) { /* accept */
           // UpdateMAll will change SlaterElm, InvM (including PfM)
           StartTimer(63);
           UpdateMAll(mi,s,TmpEleIdx,qpStart,qpEnd);
@@ -180,10 +184,13 @@ void VMCMakeSample(MPI_Comm comm) {
 
         /* Metroplis */
         x = LogProjRatio(projCntNew,TmpEleProjCnt);
-        w = cexp(x+creal(logIpNew-logIpOld)); 
-        if( !isfinite(creal(w)+cimag(w)) ) w = -1.0; /* should be rejected */
+	w = exp(2.*creal(x+logIpNew-logIpOld));
+        //w = cexp(x+creal(logIpNew-logIpOld)); 
+        if( !isfinite(w) ) w = -1.0; /* should be rejected */
+        //if( !isfinite(creal(w)+cimag(w)) ) w = -1.0; /* should be rejected */
 
-        if(pow(cabs(w),2) > genrand_real2()) { /* accept */
+        //if(pow(cabs(w),2) > genrand_real2()) { /* accept */
+        if(w > genrand_real2()) { /* accept */
           StartTimer(68);
           UpdateMAllTwo_fcmp(mi, s, mj, t, ri, rj, TmpEleIdx,qpStart,qpEnd);
           StopTimer(68);
