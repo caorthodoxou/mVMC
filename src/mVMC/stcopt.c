@@ -177,7 +177,7 @@ int StochasticOpt(MPI_Comm comm) {
     //#pragma omp parallel for default(shared) private(si,pi)
     #pragma loop noalias
     #pragma loop norecurrence para
-    for(si=0;si<nSmat;si++) {
+    for(si=0;si<nSmat;++si) {
       pi = smatToParaIdx[si];
       if(pi%2==0){
         if(RealEvolve==0){
