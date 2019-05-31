@@ -580,13 +580,9 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
         printf("Progress of Simulation: %d%%\n", iprogress);
       }
     }
-
+   
     for(i=0;i<NPara;i++) Paran[i] = Para_new[i] = Para[i]; 
-    //for(i=0;i<NPara;i++) {
-    //  Paran[i] = Para[i];
-    //  Para_new[i] = Para[i]; 
-    //}
-
+    
     //////////////////////////////////
     //Calculation of K1 term
     StartTimer(20);
@@ -607,7 +603,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #endif
     VMCMainCal(comm_child1);
     StopTimer(4);
-
+    
     StartTimer(21);
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, AverageWE.\n", step);
@@ -643,13 +639,13 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
         }
     }
 #endif
-
+   
     StartTimer(5);
     factor = 0.5;
     factor2 = 1./6.;
     info = StochasticOpt(comm_parent);
     StopTimer(5);
-
+  
 #ifdef _DEBUG_DUMP_PARA
     for(int i=0; i<NPara; ++i){
       fprintf(stderr, "DEBUG: Para[%d] = %lf %lf\n", i, creal(Para[i]), cimag(Para[i]));
@@ -676,7 +672,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, MakeSample.\n", step);
 #endif
-    VMCMakeSample(comm_child1);
+    //VMCMakeSample(comm_child1);
     StopTimer(3);
 
     StartTimer(4);
@@ -743,7 +739,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, MakeSample.\n", step);
 #endif
-    VMCMakeSample(comm_child1);
+    //VMCMakeSample(comm_child1);
     StopTimer(3);
 
     StartTimer(4);
@@ -814,7 +810,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, MakeSample.\n", step);
 #endif
-    VMCMakeSample(comm_child1);
+    //VMCMakeSample(comm_child1);
     StopTimer(3);
 
     StartTimer(4);

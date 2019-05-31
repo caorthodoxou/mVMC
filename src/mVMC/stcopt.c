@@ -179,6 +179,7 @@ int StochasticOpt(MPI_Comm comm) {
     #pragma loop norecurrence para
     for(si=0;si<nSmat;++si) {
       pi = smatToParaIdx[si];
+      printf("pi = %d, si = %d\n",pi, si);
       if(pi%2==0){
         if(RealEvolve==0){
           para[pi/2] += r[si];  
@@ -193,7 +194,9 @@ int StochasticOpt(MPI_Comm comm) {
           para[(pi-1)/2] += r[si]*I;                                                                     
         }else if(RealEvolve==1){
           para[(pi-1)/2] += -r[si];                                                                  
+	  printf("pi odd %d",pi);
         }else{
+	  printf("pi odd %d",pi);
           para[(pi-1)/2] += -factor*r[si];
           para_new[(pi-1)/2] += -factor2*r[si];
        }
