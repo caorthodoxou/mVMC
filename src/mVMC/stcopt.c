@@ -56,7 +56,7 @@ int StochasticOpt(MPI_Comm comm) {
 
   double complex *para=Para;
   double complex *paran=Paran;
-  double complex *para_new=Para_new;
+  double complex *ktmp=Ktmp;
 
   int rank,size;
   MPI_Comm_rank(comm,&rank);
@@ -177,28 +177,23 @@ int StochasticOpt(MPI_Comm comm) {
     //#pragma omp parallel for default(shared) private(si,pi)
     #pragma loop noalias
     #pragma loop norecurrence para
-    for(si=0;si<nSmat;++si) {
+    for(si=0;si<nSmat;si++) {
       pi = smatToParaIdx[si];
-      printf("pi = %d, si = %d\n",pi, si);
       if(pi%2==0){
         if(RealEvolve==0){
           para[pi/2] += r[si];  
         }else if(RealEvolve==1){
           para[pi/2] += r[si]*I;  
         }else{
-          para[pi/2] = paran[pi/2] + factor*r[si]*I;
-          para_new[pi/2] += factor2*r[si]*I;
+          ktmp[pi/2] = r[si]*I;
         }
       }else{
         if(RealEvolve==0){
           para[(pi-1)/2] += r[si]*I;                                                                     
         }else if(RealEvolve==1){
           para[(pi-1)/2] += -r[si];                                                                  
-	  printf("pi odd %d",pi);
         }else{
-	  printf("pi odd %d",pi);
-          para[(pi-1)/2] += -factor*r[si];
-          para_new[(pi-1)/2] += -factor2*r[si];
+          ktmp[(pi-1)/2] += -r[si];
        }
       }
     }

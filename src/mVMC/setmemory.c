@@ -263,7 +263,11 @@ void SetMemory() {
   //printf("DEBUG:opt=%d %d %d %d %d Ne=%d\n", AllComplexFlag,NPara,NProj,NSlater,NOrbitalIdx,Ne);
   Para     = (double complex*)malloc(sizeof(double complex)*(NPara));
   Paran    = (double complex*)malloc(sizeof(double complex)*(NPara));
-  Para_new = (double complex*)malloc(sizeof(double complex)*(NPara));
+  Ktmp     = (double complex*)malloc(sizeof(double complex)*(NPara));
+  K1       = (double complex*)malloc(sizeof(double complex)*(NPara));
+  K2       = (double complex*)malloc(sizeof(double complex)*(NPara));
+  K3       = (double complex*)malloc(sizeof(double complex)*(NPara));
+  K4       = (double complex*)malloc(sizeof(double complex)*(NPara));
 
   Proj     = Para;
   ProjBF   = Para + NProj;
@@ -478,8 +482,12 @@ void FreeMemory() {
   
   free(Para);
   if(RealEvolve==2){
-    free(Para_new);
     free(Paran);
+    free(Ktmp);
+    free(K1);
+    free(K2);
+    free(K3);
+    free(K4);
   }
   return;
 }

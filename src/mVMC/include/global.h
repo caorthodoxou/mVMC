@@ -175,7 +175,6 @@ int FlagBinary=0;
 /* flag for file flush */
 int NFileFlushInterval=1;
 
-double factor, factor2; /*used in Runge-Kutta*/
 int gf=1; /*dictates if Green's functions are calculated during real-time evolution*/
 
 /*High Harmonic Generation Variables*/
@@ -195,7 +194,11 @@ int NOptTrans; /* the number of weights for OptTrans. This is used only for vari
 int **etaFlag;   /* Back Flow correlation factor (eta = 1.0 or ProjBF[0])*/
 double complex *Para;   /* variatonal parameters */
 double complex *Paran;
-double complex *Para_new;
+double complex *Ktmp;
+double complex *K1;
+double complex *K2;
+double complex *K3;
+double complex *K4;
 double complex *Proj;   /* correlation factor (Proj    =Para) */
 double complex *ProjBF; /* Back flow correlation factor (Proj    =Para) */
 double complex *Slater; /* pair orbital       (Slater  =Para+NProj) */

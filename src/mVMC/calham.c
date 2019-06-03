@@ -44,7 +44,6 @@ double CalculateDoubleOccupation(int *eleIdx, const int *eleCfg,
 #pragma omp master
   {StartTimer(70);}
 
-  /* CoulombIntra */
 #pragma omp parallel for private(ri) reduction(+:db)
   for(ri=0;ri<Nsite;ri++) {
     db += (double)(n0[ri] * n1[ri]);

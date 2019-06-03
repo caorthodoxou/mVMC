@@ -439,7 +439,6 @@ int VMCParaOpt(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
     printf("Debug: step %d, AverageWE.\n", step);
 #endif
     Dbtot /= Wc;
-    //etatot /=Wc;
     WeightAverageWE(comm_parent);
     if(RealEvolve==1) WeightAverageGreenFunc(comm_parent); 
     StartTimer(25);//DEBUG
@@ -581,7 +580,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
       }
     }
    
-    for(i=0;i<NPara;i++) Paran[i] = Para_new[i] = Para[i]; 
+    for(i=0;i<NPara;i++) Paran[i] = Para[i]; 
     
     //////////////////////////////////
     //Calculation of K1 term
@@ -641,11 +640,14 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #endif
    
     StartTimer(5);
-    factor = 0.5;
-    factor2 = 1./6.;
     info = StochasticOpt(comm_parent);
     StopTimer(5);
   
+    for(i=0;i<NPara;i++) {
+        K1[i] = Ktmp[i];
+        Para[i] = Paran[i] + 0.5*Ktmp[i];
+    }  
+
 #ifdef _DEBUG_DUMP_PARA
     for(int i=0; i<NPara; ++i){
       fprintf(stderr, "DEBUG: Para[%d] = %lf %lf\n", i, creal(Para[i]), cimag(Para[i]));
@@ -693,7 +695,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #endif
     WeightAverageSROpt(comm_parent);
     StopTimer(25);
-    //ReduceCounter(comm_child2);
+    ReduceCounter(comm_child2);
     StopTimer(21);
 
 #ifdef _DEBUG_DUMP_SROPTO_STORE
@@ -713,9 +715,13 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #endif
 
     StartTimer(5);
-    factor2 = 1./3.;
     info = StochasticOpt(comm_parent);
     StopTimer(5);
+
+    for(i=0;i<NPara;i++) {
+        K2[i] = Ktmp[i];
+        Para[i] = Paran[i] + 0.5*Ktmp[i];
+    }
 
 #ifdef _DEBUG_DUMP_PARA
     for(int i=0; i<NPara; ++i){
@@ -760,7 +766,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #endif
     WeightAverageSROpt(comm_parent);
     StopTimer(25);
-    //ReduceCounter(comm_child2);
+    ReduceCounter(comm_child2);
     StopTimer(21);
 
 #ifdef _DEBUG_DUMP_SROPTO_STORE
@@ -780,9 +786,13 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #endif
 
     StartTimer(5);
-    factor = 1.0;
     info = StochasticOpt(comm_parent);
     StopTimer(5);
+
+    for(i=0;i<NPara;i++) {
+        K3[i] = Ktmp[i];
+        Para[i] = Paran[i] + Ktmp[i];
+    }
 
 #ifdef _DEBUG_DUMP_PARA
     for(int i=0; i<NPara; ++i){
@@ -831,7 +841,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #endif
     WeightAverageSROpt(comm_parent);
     StopTimer(25);
-    //ReduceCounter(comm_child2);
+    ReduceCounter(comm_child2);
     StopTimer(21);
 
 #ifdef _DEBUG_DUMP_SROPTO_STORE
@@ -851,9 +861,10 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #endif
 
     StartTimer(5);
-    factor2 = 1./6.;
     info = StochasticOpt(comm_parent);
     StopTimer(5);
+
+    for(i=0;i<NPara;i++) K4[i] = Ktmp[i];
 
 #ifdef _DEBUG_DUMP_PARA
     for(int i=0; i<NPara; ++i){
@@ -868,7 +879,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 
     //////////////////////////////////
     //Assigns new state
-    for(i=0;i<NPara;i++) Para[i] = Para_new[i];
+    for(i=0;i<NPara;i++) Para[i] = Paran[i] + (1./6.)*(K1[i] + 2.*K2[i] + 2.*K3[i] + K4[i]);
     gf=1; 
 
     StartTimer(23);
