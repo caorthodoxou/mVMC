@@ -182,8 +182,8 @@ void shiftGJ() {
 /* shift 2-site DH Correlation factor */
 /* The return value is gutzwiller shift width */
 double shiftDH2() {
-  double gShift=0.0;
-  double shift;
+  double complex gShift=0.0+0.0*I;
+  double complex shift;
   int xn,n0,n1,n2,offset;
 
   if(NDoublonHolon2siteIdx==0) return 0.0;
@@ -195,7 +195,7 @@ double shiftDH2() {
     n0 = offset + xn;
     n1 = n0 + 2*NDoublonHolon2siteIdx;
     n2 = n0 + 4*NDoublonHolon2siteIdx;
-    shift = (creal(Proj[n0])+creal(Proj[n1])+creal(Proj[n2]))/3.0; //TBC
+    shift = (Proj[n0]+Proj[n1]+Proj[n2])/3.0;
     Proj[n0] -= shift;
     Proj[n1] -= shift;
     Proj[n2] -= shift;
@@ -208,8 +208,8 @@ double shiftDH2() {
 /* shift 4-site DH Correlation factor */
 /* The return value is gutzwiller shift width */
 double shiftDH4() {
-  double gShift=0.0;
-  double shift;
+  double complex gShift=0.0+0.0*I;
+  double complex shift;
   int xn,n0,n1,n2,n3,n4,offset;
 
   if(NDoublonHolon4siteIdx==0) return 0.0;
@@ -222,7 +222,7 @@ double shiftDH4() {
     n2 = n0 + 4*NDoublonHolon4siteIdx;
     n3 = n0 + 6*NDoublonHolon4siteIdx;
     n4 = n0 + 8*NDoublonHolon4siteIdx;
-    shift = (creal(Proj[n0])+creal(Proj[n1])+creal(Proj[n2])+creal(Proj[n3])+creal(Proj[n4]))/5.0; //TBC
+    shift = (Proj[n0]+Proj[n1]+Proj[n2]+Proj[n3]+Proj[n4])/5.0;
     Proj[n0] -= shift;
     Proj[n1] -= shift;
     Proj[n2] -= shift;
