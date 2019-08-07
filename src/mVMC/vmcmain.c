@@ -612,9 +612,9 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, AverageWE.\n", step);
 #endif
-    Dbtot /= Wc;
+    if(NSROptItrStep%propGF==0) Dbtot /= Wc;
     WeightAverageWE(comm_parent);
-    WeightAverageGreenFunc(comm_parent); 
+    WeightAverageGreenFunc(comm_parent);
     StartTimer(25);//DEBUG
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, SROpt.\n", step);
@@ -1080,7 +1080,7 @@ void outputData() {
       fprintf(FileCisAjs, "\n");
     }
     /* zvo_cisajscktalt.dat */
-    if(NCisAjsCktAltDC > 0) {
+    if(NSROptItrStep%propGF==0 && NCisAjsCktAltDC > 0) {
       for (i = 0; i < NCisAjsCktAltDC; i++) fprintf(FileCisAjsCktAltDC, "% .18e  % .18e 0.0 ", creal(PhysCisAjsCktAltDC[i]), cimag(PhysCisAjsCktAltDC[i]));
       fprintf(FileCisAjsCktAltDC, "\n"); 
     }

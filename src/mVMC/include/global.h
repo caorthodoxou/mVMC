@@ -175,6 +175,7 @@ int FlagBinary=0;
 /* flag for file flush */
 int NFileFlushInterval=1;
 
+int propGF; /* calculate 2-body Green's functions every propGF'th timestep */
 double factor, factor2; /*used in Runge-Kutta*/
 int gf=1; /*dictates if Green's functions are calculated during real-time evolution*/
 

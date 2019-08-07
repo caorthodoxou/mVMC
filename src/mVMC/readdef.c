@@ -628,6 +628,7 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm) {
   NBackFlowIdx = bufInt[IdxNBF];
   Nz = bufInt[IdxNNz];
   NSROptCGMaxIter = bufInt[IdxSROptCGMaxIter];
+  propGF = bufInt[IdxpropGF];
   wL = bufDouble[IdxwL];
   F0 = bufDouble[IdxF0];
   a = bufDouble[IdxaLattice];
@@ -1481,6 +1482,7 @@ void SetDefaultValuesModPara(int *bufInt, double *bufDouble) {
   bufInt[IdxNNz] = 0;
   bufInt[Idx2Sz] = -1;// -1: sz is not fixed :fsz
   bufInt[IdxNCond] = -1;
+  bufInt[IdxpropGF] = 10;
 
   bufDouble[IdxwL]= 32.9;
   bufDouble[IdxF0] = 10.0;
@@ -1565,6 +1567,8 @@ int GetInfoFromModPara(int *bufInt, double *bufDouble) {
               bufInt[IdxNe] = (int) dtmp;
             } else if (CheckWords(ctmp, "Ncond") == 0) {
               bufInt[IdxNCond] = (int) dtmp;
+            } else if (CheckWords(ctmp, "propGF") == 0) {
+              bufInt[IdxpropGF] = (int) dtmp;
             } else if (CheckWords(ctmp, "2Sz") == 0) {
               bufInt[Idx2Sz] = (int) dtmp;
               if (bufInt[Idx2Sz] == -1) {

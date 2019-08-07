@@ -70,20 +70,21 @@ void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, in
     #pragma omp master
     {StopTimer(50);StartTimer(51);}
     
-    #pragma omp for private(idx,ri,rj,s,rk,rl,t,tmp) schedule(dynamic)
-    for(idx=0;idx<NCisAjsCktAltDC;idx++) {
-      ri = CisAjsCktAltDCIdx[idx][0];
-      rj = CisAjsCktAltDCIdx[idx][2];
-      s  = CisAjsCktAltDCIdx[idx][1];
-      rk = CisAjsCktAltDCIdx[idx][4];
-      rl = CisAjsCktAltDCIdx[idx][6];
-      t  = CisAjsCktAltDCIdx[idx][5];
+    if(NSROptItrStep%propGF==0){ 
+      #pragma omp for private(idx,ri,rj,s,rk,rl,t,tmp) schedule(dynamic)
+      for(idx=0;idx<NCisAjsCktAltDC;idx++) {
+        ri = CisAjsCktAltDCIdx[idx][0];
+        rj = CisAjsCktAltDCIdx[idx][2];
+        s  = CisAjsCktAltDCIdx[idx][1];
+        rk = CisAjsCktAltDCIdx[idx][4];
+        rl = CisAjsCktAltDCIdx[idx][6];
+        t  = CisAjsCktAltDCIdx[idx][5];
 
-      tmp = GreenFunc2(ri,rj,rk,rl,s,t,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,
+        tmp = GreenFunc2(ri,rj,rk,rl,s,t,ip,myEleIdx,eleCfg,myEleNum,eleProjCnt,
                        myProjCntNew,myBuffer);
-      PhysCisAjsCktAltDC[idx] += w*tmp;
+        PhysCisAjsCktAltDC[idx] += w*tmp;
+      }
     }
-    
     #pragma omp master
     {StopTimer(51);StartTimer(52);}
 
@@ -95,11 +96,13 @@ void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, in
     #pragma omp master
     {StopTimer(52);StartTimer(53);}
 
-    #pragma omp for private(idx,idx0,idx1) nowait
-    for(idx=0;idx<NCisAjsCktAlt;idx++) {
-      idx0 = CisAjsCktAltIdx[idx][0];
-      idx1 = CisAjsCktAltIdx[idx][1];
-      PhysCisAjsCktAlt[idx] += w*LocalCisAjs[idx0]*conj(LocalCisAjs[idx1]);// TBC conj ok?
+    if(NSROptItrStep%propGF==0){
+      #pragma omp for private(idx,idx0,idx1) nowait
+      for(idx=0;idx<NCisAjsCktAlt;idx++) {
+        idx0 = CisAjsCktAltIdx[idx][0];
+        idx1 = CisAjsCktAltIdx[idx][1];
+        PhysCisAjsCktAlt[idx] += w*LocalCisAjs[idx0]*conj(LocalCisAjs[idx1]);// TBC conj ok?
+      }
     }
 
     #pragma omp master

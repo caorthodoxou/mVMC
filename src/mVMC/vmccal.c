@@ -173,8 +173,10 @@ void VMCMainCal(MPI_Comm comm) {
 
     if(RealEvolve>0 && gf==1) {
       CalculateGreenFunc(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt);
-      db = CalculateDoubleOccupation(eleIdx, eleCfg, eleNum, eleProjCnt);
-      Dbtot += w * db/Nsite;
+      if(NSROptItrStep%propGF==0){
+        db = CalculateDoubleOccupation(eleIdx, eleCfg, eleNum, eleProjCnt);
+        Dbtot += w * db/Nsite;
+      }
     }
 
     Wc += w;
