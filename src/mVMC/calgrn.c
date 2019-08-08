@@ -70,7 +70,7 @@ void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, in
     #pragma omp master
     {StopTimer(50);StartTimer(51);}
     
-    if(NSROptItrStep%propGF==0){ 
+    if(calGF==0){ 
       #pragma omp for private(idx,ri,rj,s,rk,rl,t,tmp) schedule(dynamic)
       for(idx=0;idx<NCisAjsCktAltDC;idx++) {
         ri = CisAjsCktAltDCIdx[idx][0];
@@ -96,7 +96,7 @@ void CalculateGreenFunc(const double w, const double complex ip, int *eleIdx, in
     #pragma omp master
     {StopTimer(52);StartTimer(53);}
 
-    if(NSROptItrStep%propGF==0){
+    if(calGF==0){
       #pragma omp for private(idx,idx0,idx1) nowait
       for(idx=0;idx<NCisAjsCktAlt;idx++) {
         idx0 = CisAjsCktAltIdx[idx][0];

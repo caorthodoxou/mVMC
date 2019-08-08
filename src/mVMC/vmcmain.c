@@ -568,6 +568,10 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
   tc = 0.0;
 
   for(step=0;step<NSROptItrStep;step++) {
+
+    //if calGF=0 then two-body GFs are calculated
+    calGF = step%propGF;
+
     //printf("0 DUBUG make:step=%d TwoSz=%d\n",step,TwoSz);
     if(rank==0){
       OutputTime(step);
@@ -612,7 +616,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, AverageWE.\n", step);
 #endif
-    if(NSROptItrStep%propGF==0) Dbtot /= Wc;
+    if(calGF==0) Dbtot /= Wc;
     WeightAverageWE(comm_parent);
     WeightAverageGreenFunc(comm_parent);
     StartTimer(25);//DEBUG
@@ -1080,7 +1084,7 @@ void outputData() {
       fprintf(FileCisAjs, "\n");
     }
     /* zvo_cisajscktalt.dat */
-    if(NSROptItrStep%propGF==0 && NCisAjsCktAltDC > 0) {
+    if(calGF==0 && NCisAjsCktAltDC > 0) {
       for (i = 0; i < NCisAjsCktAltDC; i++) fprintf(FileCisAjsCktAltDC, "% .18e  % .18e 0.0 ", creal(PhysCisAjsCktAltDC[i]), cimag(PhysCisAjsCktAltDC[i]));
       fprintf(FileCisAjsCktAltDC, "\n"); 
     }
