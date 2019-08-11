@@ -39,6 +39,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 int VMCPhysCal(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2);
 void conversion();
 void WriteToTrans();
+void CalcPhase(double tracked);
 void outputData();
 void printUsageError();
 void printOption();
@@ -559,6 +560,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
   int tmp_i;//DEBUG
   int iprogress;
   int i;
+  FILE *fptrack = fopen("/home/chris/phd/mVMC/samples/Standard/Hubbard/square/tracking_data.dat", "r");
 
   MPI_Comm_rank(comm_parent, &rank);
   
@@ -567,7 +569,17 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
   NSROptItrStep = (int) round(cycles*2.*M_PI/(wL*DSROptStepDt)) + 1;
   tc = 0.0;
 
+  double current[4*NSROptItrStep+3];
+  
+  for(i=0;i<4*NSROptItrStep+3;i++) fscanf(fptrack, "%lf", &(current[i]));
+  fclose(fptrack);
+  //printf("%lf\n",current[19]);
+
   for(step=0;step<NSROptItrStep;step++) {
+
+    //if calGF=0 then two-body GFs are calculated
+    calGF = step%propGF;
+
     //printf("0 DUBUG make:step=%d TwoSz=%d\n",step,TwoSz);
     if(rank==0){
       OutputTime(step);
@@ -586,35 +598,40 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
       Paran[i] = Para[i];
       Para_new[i] = Para[i]; 
     }
-
+    
     //////////////////////////////////
     //Calculation of K1 term
     StartTimer(20);
     UpdateSlaterElm_fcmp();
     //UpdateQPWeight();
     StopTimer(20);
-
+   
     StartTimer(3);
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, MakeSample.\n", step);
 #endif
     VMCMakeSample(comm_child1);
     StopTimer(3);
+    
+    clearGF = 1;
+    NearestNeighbours(comm_child1);
+    WeightAverageGreenFunc(comm_parent);
+    if(calGF==0) Dbtot /= Wc;
+    if(tracking==1) CalcPhase(current[4*step]);
 
     StartTimer(4);
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, MainCal.\n", step);
 #endif
+    clearGF = 0;
     VMCMainCal(comm_child1);
     StopTimer(4);
-
     StartTimer(21);
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, AverageWE.\n", step);
 #endif
-    Dbtot /= Wc;
     WeightAverageWE(comm_parent);
-    WeightAverageGreenFunc(comm_parent); 
+    //WeightAverageGreenFunc(comm_parent); 
     StartTimer(25);//DEBUG
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, SROpt.\n", step);
@@ -663,8 +680,10 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 
     //////////////////////////////////
     //Calculation of K2 term
-    tc += DSROptStepDt/2.0; 
-    WriteToTrans();
+    if(tracking==0) {
+      tc += DSROptStepDt/2.0; 
+      WriteToTrans();
+    }
 
     gf=0; /*stops Green's functions being calculated again*/
     StartTimer(20);
@@ -679,10 +698,16 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     //VMCMakeSample(comm_child1);
     StopTimer(3);
 
+    clearGF = 1;
+    NearestNeighbours(comm_child1);
+    WeightAverageGreenFunc(comm_parent);
+    if(tracking==1) CalcPhase(current[4*step+1]);
+
     StartTimer(4);
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, MainCal.\n", step);
 #endif
+    clearGF = 0;
     VMCMainCal(comm_child1);
     StopTimer(4);
 
@@ -691,6 +716,11 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     printf("Debug: step %d, AverageWE.\n", step);
 #endif
     WeightAverageWE(comm_parent);
+    //WeightAverageGreenFunc(comm_parent);
+    if(tracking==0) { 
+      for (i = 0; i < NCisAjs; i++) fprintf(FileCisAjs, "% .18e  % .18e 0.0 ", creal(PhysCisAjs[i]), cimag(PhysCisAjs[i]));
+      fprintf(FileCisAjs, "\n");
+    }
     StartTimer(25);//DEBUG
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, SROpt.\n", step);
@@ -746,10 +776,16 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     //VMCMakeSample(comm_child1);
     StopTimer(3);
 
+    clearGF = 1;
+    NearestNeighbours(comm_child1);
+    WeightAverageGreenFunc(comm_parent);
+    if(tracking==1) CalcPhase(current[4*step+2]);
+
     StartTimer(4);
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, MainCal.\n", step);
 #endif
+    clearGF = 0;
     VMCMainCal(comm_child1);
     StopTimer(4);
 
@@ -758,6 +794,11 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     printf("Debug: step %d, AverageWE.\n", step);
 #endif
     WeightAverageWE(comm_parent);
+    //WeightAverageGreenFunc(comm_parent);
+    if(tracking==0) {
+      for (i = 0; i < NCisAjs; i++) fprintf(FileCisAjs, "% .18e  % .18e 0.0 ", creal(PhysCisAjs[i]), cimag(PhysCisAjs[i]));
+      fprintf(FileCisAjs, "\n");
+    }
     StartTimer(25);//DEBUG
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, SROpt.\n", step);
@@ -801,9 +842,11 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     
     //////////////////////////////////
     //Calculation of K4 term
-    tc += DSROptStepDt/2.0;
-    WriteToTrans();
-    //for(i=0;i<NTransfer;i++) printf("real %e, imag %e\n",creal(ParaTransfer[i]),cimag(ParaTransfer[i])); 
+    if(tracking==0) {
+      tc += DSROptStepDt/2.0;
+      WriteToTrans();
+      //for(i=0;i<NTransfer;i++) printf("real %e, imag %e\n",creal(ParaTransfer[i]),cimag(ParaTransfer[i])); 
+    }
 
     StartTimer(20);
     UpdateSlaterElm_fcmp();
@@ -817,10 +860,16 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     //VMCMakeSample(comm_child1);
     StopTimer(3);
 
+    clearGF = 1;
+    NearestNeighbours(comm_child1);
+    WeightAverageGreenFunc(comm_parent);
+    if(tracking==1) CalcPhase(current[4*step+3]);
+
     StartTimer(4);
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, MainCal.\n", step);
 #endif
+    clearGF = 0;
     VMCMainCal(comm_child1);
     StopTimer(4);
 
@@ -829,6 +878,11 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     printf("Debug: step %d, AverageWE.\n", step);
 #endif
     WeightAverageWE(comm_parent);
+    //WeightAverageGreenFunc(comm_parent);
+    if(tracking==0) {
+      for (i = 0; i < NCisAjs; i++) fprintf(FileCisAjs, "% .18e  % .18e 0.0 ", creal(PhysCisAjs[i]), cimag(PhysCisAjs[i]));
+      fprintf(FileCisAjs, "\n");
+    }
     StartTimer(25);//DEBUG
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, SROpt.\n", step);
@@ -1035,6 +1089,26 @@ void WriteToTrans() {
   //printf("real %f, imag %e\n",creal(ParaTransfer[0]),cimag(ParaTransfer[0]));
 }
 
+void CalcPhase(double tracked) {
+  int i;
+  double complex nnsum, hopping;
+  double phiJ;
+   
+  for(i=0;i<NCisAjs;i++) nnsum += PhysCisAjs[i];
+  Rt = cabs(nnsum);	  
+  theta = carg(nnsum);
+  phiJ = asin(-tracked/(2.*a*Rt)) + theta; 
+  hopping = cexp(I*phiJ);
+
+  for(i=0;i<NTransfer;i++) {
+    if(i%2==0) {
+      ParaTransfer[i] = InitTransfer[i]*hopping;
+    }else{
+      ParaTransfer[i] = InitTransfer[i]*conj(hopping);
+    }
+  }
+}
+	
 void outputData() {
   int i;
 
@@ -1080,7 +1154,7 @@ void outputData() {
       fprintf(FileCisAjs, "\n");
     }
     /* zvo_cisajscktalt.dat */
-    if(NCisAjsCktAltDC > 0) {
+    if(calGF==0 && NCisAjsCktAltDC > 0) {
       for (i = 0; i < NCisAjsCktAltDC; i++) fprintf(FileCisAjsCktAltDC, "% .18e  % .18e 0.0 ", creal(PhysCisAjsCktAltDC[i]), cimag(PhysCisAjsCktAltDC[i]));
       fprintf(FileCisAjsCktAltDC, "\n"); 
     }
