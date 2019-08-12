@@ -182,7 +182,8 @@ int gf=1; /*dictates if Green's functions are calculated during real-time evolut
 int tracking; /* =0 means normal simulation, =1 tracks the inputted current */ 
 int propGF; /*the proportion of timesteps in which the 2-body GFs are calculated */
 int calGF; 
-int clearGF=0; /* =1 zeroes Green's functions */
+//int clearGF=0; /* =1 zeroes Green's functions */
+double Rstage; 
 
 /*High Harmonic Generation Variables*/
 double tc; /* current time in simulation */

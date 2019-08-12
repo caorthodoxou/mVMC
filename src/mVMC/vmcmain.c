@@ -39,7 +39,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 int VMCPhysCal(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2);
 void conversion();
 void WriteToTrans();
-void CalcPhase(double tracked);
+//void CalcPhase(double tracked);
 void outputData();
 void printUsageError();
 void printOption();
@@ -560,7 +560,8 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
   int tmp_i;//DEBUG
   int iprogress;
   int i;
-  FILE *fptrack = fopen("/home/chris/phd/mVMC/samples/Standard/Hubbard/square/tracking_data.dat", "r");
+  FILE *fptrack = fopen("tracking_data.dat", "r");
+  //FILE *fptrack = fopen("/home/k1623514/Documents/mVMC/samples/Standard/Hubbard/square/tracking_data.dat", "r");
 
   MPI_Comm_rank(comm_parent, &rank);
   
@@ -568,13 +569,12 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 
   NSROptItrStep = (int) round(cycles*2.*M_PI/(wL*DSROptStepDt)) + 1;
   tc = 0.0;
-
   double current[4*NSROptItrStep+3];
   
   for(i=0;i<4*NSROptItrStep+3;i++) fscanf(fptrack, "%lf", &(current[i]));
   fclose(fptrack);
-  //printf("%lf\n",current[19]);
-
+  //printf("%lf\n",current[20]);
+  
   for(step=0;step<NSROptItrStep;step++) {
 
     //if calGF=0 then two-body GFs are calculated
@@ -613,17 +613,18 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     VMCMakeSample(comm_child1);
     StopTimer(3);
     
-    clearGF = 1;
-    NearestNeighbours(comm_child1);
-    WeightAverageGreenFunc(comm_parent);
-    if(calGF==0) Dbtot /= Wc;
-    if(tracking==1) CalcPhase(current[4*step]);
+    //clearGF = 1;
+    //NearestNeighbours(comm_child1);
+    //WeightAverageGreenFunc(comm_parent);
+    //if(calGF==0) Dbtot /= Wc;
+    //if(tracking==1) CalcPhase(current[4*step]);
+    Rstage = current[4*step];
 
     StartTimer(4);
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, MainCal.\n", step);
 #endif
-    clearGF = 0;
+    //clearGF = 0;
     VMCMainCal(comm_child1);
     StopTimer(4);
     StartTimer(21);
@@ -631,7 +632,8 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     printf("Debug: step %d, AverageWE.\n", step);
 #endif
     WeightAverageWE(comm_parent);
-    //WeightAverageGreenFunc(comm_parent); 
+    WeightAverageGreenFunc(comm_parent); 
+    if(calGF==0) Dbtot /= Wc;
     StartTimer(25);//DEBUG
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, SROpt.\n", step);
@@ -698,16 +700,17 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     //VMCMakeSample(comm_child1);
     StopTimer(3);
 
-    clearGF = 1;
-    NearestNeighbours(comm_child1);
-    WeightAverageGreenFunc(comm_parent);
-    if(tracking==1) CalcPhase(current[4*step+1]);
+    //clearGF = 1;
+    //NearestNeighbours(comm_child1);
+    //WeightAverageGreenFunc(comm_parent);
+    //if(tracking==1) CalcPhase(current[4*step+1]);
+    Rstage = current[4*step + 1];
 
     StartTimer(4);
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, MainCal.\n", step);
 #endif
-    clearGF = 0;
+    //clearGF = 0;
     VMCMainCal(comm_child1);
     StopTimer(4);
 
@@ -716,7 +719,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     printf("Debug: step %d, AverageWE.\n", step);
 #endif
     WeightAverageWE(comm_parent);
-    //WeightAverageGreenFunc(comm_parent);
+    WeightAverageGreenFunc(comm_parent);
     if(tracking==0) { 
       for (i = 0; i < NCisAjs; i++) fprintf(FileCisAjs, "% .18e  % .18e 0.0 ", creal(PhysCisAjs[i]), cimag(PhysCisAjs[i]));
       fprintf(FileCisAjs, "\n");
@@ -776,16 +779,17 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     //VMCMakeSample(comm_child1);
     StopTimer(3);
 
-    clearGF = 1;
-    NearestNeighbours(comm_child1);
-    WeightAverageGreenFunc(comm_parent);
-    if(tracking==1) CalcPhase(current[4*step+2]);
+    //clearGF = 1;
+    //NearestNeighbours(comm_child1);
+    //WeightAverageGreenFunc(comm_parent);
+    //if(tracking==1) CalcPhase(current[4*step+2]);
+    Rstage = current[4*step + 2];
 
     StartTimer(4);
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, MainCal.\n", step);
 #endif
-    clearGF = 0;
+    //clearGF = 0;
     VMCMainCal(comm_child1);
     StopTimer(4);
 
@@ -794,7 +798,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     printf("Debug: step %d, AverageWE.\n", step);
 #endif
     WeightAverageWE(comm_parent);
-    //WeightAverageGreenFunc(comm_parent);
+    WeightAverageGreenFunc(comm_parent);
     if(tracking==0) {
       for (i = 0; i < NCisAjs; i++) fprintf(FileCisAjs, "% .18e  % .18e 0.0 ", creal(PhysCisAjs[i]), cimag(PhysCisAjs[i]));
       fprintf(FileCisAjs, "\n");
@@ -860,16 +864,17 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     //VMCMakeSample(comm_child1);
     StopTimer(3);
 
-    clearGF = 1;
-    NearestNeighbours(comm_child1);
-    WeightAverageGreenFunc(comm_parent);
-    if(tracking==1) CalcPhase(current[4*step+3]);
+    //clearGF = 1;
+    //NearestNeighbours(comm_child1);
+    //WeightAverageGreenFunc(comm_parent);
+    //if(tracking==1) CalcPhase(current[4*step+3]);
+    Rstage = current[4*step + 3];
 
     StartTimer(4);
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, MainCal.\n", step);
 #endif
-    clearGF = 0;
+    //clearGF = 0;
     VMCMainCal(comm_child1);
     StopTimer(4);
 
@@ -878,7 +883,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     printf("Debug: step %d, AverageWE.\n", step);
 #endif
     WeightAverageWE(comm_parent);
-    //WeightAverageGreenFunc(comm_parent);
+    WeightAverageGreenFunc(comm_parent);
     if(tracking==0) {
       for (i = 0; i < NCisAjs; i++) fprintf(FileCisAjs, "% .18e  % .18e 0.0 ", creal(PhysCisAjs[i]), cimag(PhysCisAjs[i]));
       fprintf(FileCisAjs, "\n");
@@ -1088,7 +1093,7 @@ void WriteToTrans() {
 
   //printf("real %f, imag %e\n",creal(ParaTransfer[0]),cimag(ParaTransfer[0]));
 }
-
+/*
 void CalcPhase(double tracked) {
   int i;
   double complex nnsum, hopping;
@@ -1108,7 +1113,7 @@ void CalcPhase(double tracked) {
     }
   }
 }
-	
+*/	
 void outputData() {
   int i;
 
