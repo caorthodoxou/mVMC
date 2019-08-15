@@ -616,7 +616,7 @@ void CalcPhase(double tracked) {
   double complex nnsum, hopping;
   double phiJ;
 
-  for(i=0;i<NCisAjs;i++) nnsum += PhysCisAjs[i];
+  for(i=0;i<NCisAjs;i++) if(i%2==0) nnsum += PhysCisAjs[i];
   Rt = cabs(nnsum);
   theta = carg(nnsum);
   phiJ = asin(-tracked/(2.*a*Rt)) + theta;
