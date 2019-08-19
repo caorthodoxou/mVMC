@@ -70,48 +70,6 @@ void calculateQCACAQ_real(double *qcacaq, const double *lslca, const double w,
                           const int nLSHam, const int nCA, const int nCACA,
                           int **cacaIdx);
 
-/*void NearestNeighbours(MPI_Comm comm) {
-  
-  int *eleIdx,*eleCfg,*eleNum,*eleProjCnt;
-  double complex ip;
-  double db, w;
-  const int qpStart=0;
-  const int qpEnd=NQPFull;
-  int sample, sampleStart, sampleEnd, sampleSize;
-  int i, info, rank, size;
-
-  MPI_Comm_size(comm,&size);
-  MPI_Comm_rank(comm,&rank);
-#ifdef _DEBUG_VMCCAL
-  printf("  Debug: SplitLoop\n");
-#endif
-  SplitLoop(&sampleStart,&sampleEnd,NVMCSample,rank,size);
-
-  StartTimer(24);
-  clearPhysQuantity();
-  StopTimer(24);
-  for(sample=sampleStart;sample<sampleEnd;sample++) {
-
-    eleIdx = EleIdx + sample*Nsize;
-    eleCfg = EleCfg + sample*Nsite2;
-    eleNum = EleNum + sample*Nsite2;
-    eleProjCnt = EleProjCnt + sample*NProj;
-
-    info = CalculateMAll_fcmp(eleIdx,qpStart,qpEnd); // InvM,PfM will change
-
-    ip = CalculateIP_fcmp(PfM,qpStart,qpEnd,MPI_COMM_SELF);
-
-    w = 1.0;
-
-    CalculateGreenFunc(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt);
-    if(calGF==0) {
-      db = CalculateDoubleOccupation(eleIdx, eleCfg, eleNum, eleProjCnt);
-      Dbtot += w * db/Nsite;
-    }
-  }
-  return;
-}*/
-
 void VMCMainCal(MPI_Comm comm) {
   int *eleIdx,*eleCfg,*eleNum,*eleProjCnt;
   double complex e,ip;
@@ -614,13 +572,12 @@ for(i=0;i<nProj;i++) srOptO[i+1] = (double)(eleProjCnt[i]);
 void CalcPhase(double tracked) {
   int i;
   double complex nnsum, hopping;
-  double phiJ;
 
-  for(i=0;i<NCisAjs;i++) if(i%2==0) nnsum += PhysCisAjs[i];
+  for(i=0;i<NCisAjs;i++) if(i%2==1) nnsum += PhysCisAjs[i];
   Rt = cabs(nnsum);
   theta = carg(nnsum);
-  phiJ = asin(-tracked/(2.*a*Rt)) + theta;
-  hopping = cexp(I*phiJ);
+  phi = asin(-tracked/(2.*a*Rt)) + theta;
+  hopping = cexp(I*phi);
 
   for(i=0;i<NTransfer;i++) {
     if(i%2==0) {

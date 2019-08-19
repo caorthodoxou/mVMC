@@ -178,18 +178,18 @@ int NFileFlushInterval=1;
 double Rt; /* magnitude of the sum of the nearest-neighbour expectations */
 double theta; /* phase of the sum of the nearest-neighbour expectations */
 double factor, factor2; /*used in Runge-Kutta*/
-int gf=1; /*dictates if Green's functions are calculated during real-time evolution*/
+int gf=1; /* dictates if Green's functions are calculated during real-time evolution */
 int tracking; /* =0 means normal simulation, =1 tracks the inputted current */ 
-int propGF; /*the proportion of timesteps in which the 2-body GFs are calculated */
+int propGF; /* the proportion of timesteps in which the 2-body GFs are calculated */
 int calGF; 
-//int clearGF=0; /* =1 zeroes Green's functions */
 double Rstage; 
+double phi;
 
 /*High Harmonic Generation Variables*/
 double tc; /* current time in simulation */
-double wL; /* Pulse frequency*/
-double F0; /*Peak amplitude*/
-double a; /*Lattice constant*/
+double wL; /* Pulse frequency */
+double F0; /* Peak amplitude */
+double a; /* Lattice constant */
 double cycles; /*Number of optical cycles*/
 
 /***** Variational Parameters *****/
@@ -287,10 +287,8 @@ double complex *SROptData; /* [2+NPara] storage for energy and variational param
 double complex Wc; /* Weight for correlation sampling = <psi|x> */
 double complex Etot; /* <H> */
 double complex Etot2; /* <H^2> */
-//double complex Dbtot;
 double Dbtot;
 double complex Dbtot2;
-//double complex etatot;
 double etatot;
 
 double complex *PhysCisAjs; /* [NCisAjs] */

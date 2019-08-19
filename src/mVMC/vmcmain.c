@@ -39,7 +39,6 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 int VMCPhysCal(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2);
 void conversion();
 void WriteToTrans();
-//void CalcPhase(double tracked);
 void outputData();
 void printUsageError();
 void printOption();
@@ -561,7 +560,6 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
   int iprogress;
   int i;
   FILE *fptrack = fopen("tracking_data.dat", "r");
-  //FILE *fptrack = fopen("/home/k1623514/Documents/mVMC/samples/Standard/Hubbard/square/tracking_data.dat", "r");
 
   MPI_Comm_rank(comm_parent, &rank);
   
@@ -613,11 +611,6 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     VMCMakeSample(comm_child1);
     StopTimer(3);
     
-    //clearGF = 1;
-    //NearestNeighbours(comm_child1);
-    //WeightAverageGreenFunc(comm_parent);
-    //if(calGF==0) Dbtot /= Wc;
-    //if(tracking==1) CalcPhase(current[4*step]);
     Rstage = current[4*step];
 
     StartTimer(4);
@@ -700,10 +693,6 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     //VMCMakeSample(comm_child1);
     StopTimer(3);
 
-    //clearGF = 1;
-    //NearestNeighbours(comm_child1);
-    //WeightAverageGreenFunc(comm_parent);
-    //if(tracking==1) CalcPhase(current[4*step+1]);
     Rstage = current[4*step + 1];
 
     StartTimer(4);
@@ -779,10 +768,6 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     //VMCMakeSample(comm_child1);
     StopTimer(3);
 
-    //clearGF = 1;
-    //NearestNeighbours(comm_child1);
-    //WeightAverageGreenFunc(comm_parent);
-    //if(tracking==1) CalcPhase(current[4*step+2]);
     Rstage = current[4*step + 2];
 
     StartTimer(4);
@@ -864,10 +849,6 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     //VMCMakeSample(comm_child1);
     StopTimer(3);
 
-    //clearGF = 1;
-    //NearestNeighbours(comm_child1);
-    //WeightAverageGreenFunc(comm_parent);
-    //if(tracking==1) CalcPhase(current[4*step+3]);
     Rstage = current[4*step + 3];
 
     StartTimer(4);
@@ -1073,7 +1054,7 @@ void conversion() {
 }
 
 void WriteToTrans() {
-  double complex hopping, phi;
+  double complex hopping;
   int i;
 
   phi = a*F0/wL * pow(sin(wL*tc/(2.*cycles)),2.) * sin(wL*tc);
@@ -1144,7 +1125,8 @@ void outputData() {
   if(RealEvolve > 0) {
     /* zvo_out.dat */
     //fprintf(FileOut, "% .18e % .18e  % .18e % .18e %.18e %.18e\n", creal(Etot),cimag(Etot), creal(Etot2), creal((Etot2 - Etot*Etot)/(Etot*Etot)),creal(Sztot),creal(Sztot2));
-    fprintf(FileOut, "% .18e % .18e  % .18e % .18e %.18e %.18e\n", creal(Etot),cimag(Etot), creal(Etot2), creal((Etot2 - Etot*Etot)/(Etot*Etot)),creal(Sztot),creal(Dbtot));
+    //fprintf(FileOut, "% .18e % .18e  % .18e % .18e %.18e %.18e\n", creal(Etot),cimag(Etot), creal(Etot2), creal((Etot2 - Etot*Etot)/(Etot*Etot)),creal(Sztot),creal(Dbtot));
+    fprintf(FileOut, "% .18e % .18e  % .18e % .18e %.18e %.18e\n", creal(Etot), creal((Etot2 - Etot*Etot)/(Etot*Etot)), Rt, theta, phi, Dbtot);
     /* zvo_var.dat */
     if (FlagBinary == 0) { /* formatted output*/
       fprintf(FileVar, "% .18e % .18e 0.0 % .18e % .18e 0.0 ", creal(Etot), cimag(Etot), creal(Etot2), cimag(Etot2));
