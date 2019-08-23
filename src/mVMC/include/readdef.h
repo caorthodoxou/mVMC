@@ -76,6 +76,7 @@ enum ParamIdxInt{
   IdxSPGaussLeg, IdxSPStot, IdxMPTrans,
   IdxSROptItrStep, IdxSROptItrSmp, IdxSROptFixSmp,
   IdxVMCWarmUp, IdxVMCInterval, IdxVMCSample,
+  IdxVMCSample2, IdxsAll,
   IdxExUpdatePath, IdxRndSeed, IdxSplitSize,
   IdxNLocSpin,IdxNTrans,IdxNCoulombIntra,
   IdxNCoulombInter, IdxNHund, IdxNPairHop, 
@@ -90,6 +91,7 @@ enum ParamIdxInt{
 
 enum ParamIdxDouble{
   IdxwL, IdxF0, IdxaLattice, Idxcycles, 
+  Idxtcstart, Idxtcstop,
   IdxSROptRedCut, IdxSROptStaDel, IdxSROptStepDt,
   IdxSROptCGTol,
   ParamIdxDouble_End

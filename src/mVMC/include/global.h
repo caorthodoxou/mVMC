@@ -82,7 +82,11 @@ double DSROptCGTol; /* the tolerance for SR-CG method */
 int NVMCWarmUp; /* Monte Carlo steps for warming up */
 int NVMCInterval; /* sampling interval [MCS] */ 
 int NVMCSample; /* the number of samples */
+int NVMCSample2; /* the number of samples used around the transition time */
+int sAll; /* 0: samples taken at first RK4 step; 1: taken at all steps; 2: at all steps in conjunction with NVMCSample2 */
 int NExUpdatePath; /* update by exchange hopping  0: off, 1: on */
+
+double tcstart, tcstop; /* times at which the use of NVMCSample2 starts and stops */
 
 int RndSeed; /* seed for pseudorandom number generator */
 int NSplitSize; /* the number of inner MPI processes */

@@ -603,6 +603,8 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm) {
   NVMCWarmUp = bufInt[IdxVMCWarmUp];
   NVMCInterval = bufInt[IdxVMCInterval];
   NVMCSample = bufInt[IdxVMCSample];
+  NVMCSample2 = bufInt[IdxVMCSample2];
+  sAll = bufInt[IdxsAll];
   NExUpdatePath = bufInt[IdxExUpdatePath];
   RndSeed = bufInt[IdxRndSeed];
   NSplitSize = bufInt[IdxSplitSize];
@@ -632,6 +634,8 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm) {
   F0 = bufDouble[IdxF0];
   a = bufDouble[IdxaLattice];
   cycles = bufDouble[Idxcycles];
+  tcstart = bufDouble[Idxtcstart];
+  tcstop = bufDouble[Idxtcstop];
   DSROptRedCut = bufDouble[IdxSROptRedCut];
   DSROptStaDel = bufDouble[IdxSROptStaDel];
   DSROptStepDt = bufDouble[IdxSROptStepDt];
@@ -1454,6 +1458,8 @@ void SetDefaultValuesModPara(int *bufInt, double *bufDouble) {
   bufInt[IdxVMCWarmUp] = 10;
   bufInt[IdxVMCInterval] = 1;
   bufInt[IdxVMCSample] = 10;
+  bufInt[IdxVMCSample2] = 0;
+  bufInt[IdxsAll] = 0;
   bufInt[IdxExUpdatePath] = 0;
   bufInt[IdxRndSeed] = 11272;
   bufInt[IdxSplitSize] = 1;
@@ -1486,6 +1492,8 @@ void SetDefaultValuesModPara(int *bufInt, double *bufDouble) {
   bufDouble[IdxF0] = 10.0;
   bufDouble[IdxaLattice] = 4.0;
   bufDouble[Idxcycles] = 10.0;  
+  bufDouble[Idxtcstart] = 0.0;
+  bufDouble[Idxtcstop] = 0.0;
   bufDouble[IdxSROptRedCut] = 0.001;
   bufDouble[IdxSROptStaDel] = 0.02;
   bufDouble[IdxSROptStepDt] = 0.02;
@@ -1553,6 +1561,10 @@ int GetInfoFromModPara(int *bufInt, double *bufDouble) {
               bufInt[IdxVMCCalcMode] = (int) dtmp;
             } else if (CheckWords(ctmp, "RealEvolve") == 0) {
               bufInt[IdxEvolveMode] = (int) dtmp;
+            } else if (CheckWords(ctmp, "sAll") == 0) {
+              bufInt[IdxsAll] = (int) dtmp;
+            } else if (CheckWords(ctmp, "NVMCSample2") == 0) {
+              bufInt[IdxVMCSample2] = (int) dtmp;
             } else if (CheckWords(ctmp, "NLanczosMode") == 0) {
               bufInt[IdxLanczosMode] = (int) dtmp;
             } else if (CheckWords(ctmp, "NDataIdxStart") == 0) {
@@ -1589,6 +1601,10 @@ int GetInfoFromModPara(int *bufInt, double *bufDouble) {
               bufDouble[IdxaLattice] = (double) dtmp;
             } else if (CheckWords(ctmp, "cycles") == 0) {
               bufDouble[Idxcycles] = (double) dtmp;
+            } else if (CheckWords(ctmp, "tcstart") == 0) {
+              bufDouble[Idxtcstart] = (double) dtmp;
+            } else if (CheckWords(ctmp, "tcstop") == 0) {
+              bufDouble[Idxtcstop] = (double) dtmp;
             } else if (CheckWords(ctmp, "DSROptRedCut") == 0) {
               bufDouble[IdxSROptRedCut] = (double) dtmp;
             } else if (CheckWords(ctmp, "DSROptStaDel") == 0) {
