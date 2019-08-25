@@ -238,7 +238,8 @@ int main(int argc, char* argv[])
   
   conversion();
   if(RealEvolve>0) printf("wL=%e, F0=%e, a=%e, t0=%e, U=%e\n", wL, F0, a, creal(ParaTransfer[0]), creal(ParaCoulombIntra[0]));
-  
+  if(RealEvolve>0 && NVMCSample2>0) printf("tcstart = %f, tcstop = %f\n",tcstart, tcstop);
+
   /* split MPI coummunicator */
 #ifdef _mpi_use
   StartTimer(10);
@@ -560,14 +561,13 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
   int iprogress;
   int i, NVMCSample3;
 
-  NVMCSample3 = NVMCSample;
-
   MPI_Comm_rank(comm_parent, &rank);
   
   InitFilePhysCal(0, rank);  
 
   NSROptItrStep = (int) round(cycles*2.*M_PI/(wL*DSROptStepDt)) + 1;
   tc = 0.0;
+  NVMCSample3 = NVMCSample;
 
   for(step=0;step<NSROptItrStep;step++) {
     //printf("0 DUBUG make:step=%d TwoSz=%d\n",step,TwoSz);
@@ -1019,6 +1019,9 @@ void conversion() {
   wL *= convfac*0.0001519828442;  
   a *= 1.889726125/convfac;
   F0 *= 1.944689151e-4*pow(convfac,2.);
+
+  tcstart *= 41.34144728/convfac;
+  tcstop *= 41.34144728/convfac;
 }
 
 void WriteToTrans() {
