@@ -601,11 +601,12 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     printf("Debug: step %d, MakeSample.\n", step);
 #endif
 
-    if(NVMCSample2>0 && tcstart<=tc<tcstop){
+    if(NVMCSample2>0 && (tc>=tcstart || tc<tcstop)){
       NVMCSample = NVMCSample2;
     }else{
       NVMCSample = NVMCSample3;
     }
+    //printf("1 %d, 2 %d, 3 %d\n",NVMCSample, NVMCSample2, NVMCSample3);
     VMCMakeSample(comm_child1);
     StopTimer(3);
 
@@ -684,7 +685,8 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, MakeSample.\n", step);
 #endif
-    if(sAll==1 || (sAll==2 && tcstart<=tc<=tcstop)) VMCMakeSample(comm_child1);
+    if(sAll==1 || (sAll==2 && (tc>=tcstart || tc<tcstop))) VMCMakeSample(comm_child1);
+    //if(sAll==1 || (sAll==2 && tcstart<=tc<=tcstop)) VMCMakeSample(comm_child1);
     StopTimer(3);
 
     StartTimer(4);
@@ -705,7 +707,8 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #endif
     WeightAverageSROpt(comm_parent);
     StopTimer(25);
-    if(sAll==1 || (sAll==2 && tcstart<=tc<=tcstop)) ReduceCounter(comm_child2);
+    //if(sAll==1 || (sAll==2 && tcstart<=tc<=tcstop)) ReduceCounter(comm_child2);
+    if(sAll==1 || (sAll==2 && (tc>=tcstart || tc<tcstop))) ReduceCounter(comm_child2);
     StopTimer(21);
 
 #ifdef _DEBUG_DUMP_SROPTO_STORE
@@ -751,7 +754,8 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, MakeSample.\n", step);
 #endif
-    if(sAll==1 || (sAll==2 && tcstart<=tc<=tcstop)) VMCMakeSample(comm_child1);
+    //if(sAll==1 || (sAll==2 && tcstart<=tc<=tcstop)) VMCMakeSample(comm_child1);
+    if(sAll==1 || (sAll==2 && (tc>=tcstart || tc<tcstop))) VMCMakeSample(comm_child1);
     StopTimer(3);
 
     StartTimer(4);
@@ -772,7 +776,8 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #endif
     WeightAverageSROpt(comm_parent);
     StopTimer(25);
-    if(sAll==1 || (sAll==2 && tcstart<=tc<=tcstop)) ReduceCounter(comm_child2);
+    //if(sAll==1 || (sAll==2 && tcstart<=tc<=tcstop)) ReduceCounter(comm_child2);
+    if(sAll==1 || (sAll==2 && (tc>=tcstart || tc<tcstop))) ReduceCounter(comm_child2);
     StopTimer(21);
 
 #ifdef _DEBUG_DUMP_SROPTO_STORE
@@ -822,7 +827,8 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, MakeSample.\n", step);
 #endif
-    if(sAll==1 || (sAll==2 && tcstart<=tc<=tcstop)) VMCMakeSample(comm_child1);
+    //if(sAll==1 || (sAll==2 && tcstart<=tc<=tcstop)) VMCMakeSample(comm_child1);
+    if(sAll==1 || (sAll==2 && (tc>=tcstart || tc<tcstop))) VMCMakeSample(comm_child1);
     StopTimer(3);
 
     StartTimer(4);
@@ -843,7 +849,8 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #endif
     WeightAverageSROpt(comm_parent);
     StopTimer(25);
-    if(sAll==1 || (sAll==2 && tcstart<=tc<=tcstop)) ReduceCounter(comm_child2);
+    //if(sAll==1 || (sAll==2 && tcstart<=tc<=tcstop)) ReduceCounter(comm_child2);
+    if(sAll==1 || (sAll==2 && (tc>=tcstart || tc<tcstop))) ReduceCounter(comm_child2);
     StopTimer(21);
 
 #ifdef _DEBUG_DUMP_SROPTO_STORE

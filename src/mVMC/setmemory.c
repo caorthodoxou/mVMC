@@ -271,18 +271,33 @@ void SetMemory() {
   OptTrans = Para + NProj + NProjBF + NSlater;
 
   /***** Electron Configuration ******/
-  EleIdx            = (int*)malloc(sizeof(int)*( NVMCSample*2*Ne ));
-  EleCfg            = (int*)malloc(sizeof(int)*( NVMCSample*2*Nsite ));
-  EleNum            = (int*)malloc(sizeof(int)*( NVMCSample*2*Nsite ));
-  EleProjCnt        = (int*)malloc(sizeof(int)*( NVMCSample*NProj ));
+  if(NVMCSample2==0){
+    EleIdx            = (int*)malloc(sizeof(int)*( NVMCSample*2*Ne ));
+    EleCfg            = (int*)malloc(sizeof(int)*( NVMCSample*2*Nsite ));
+    EleNum            = (int*)malloc(sizeof(int)*( NVMCSample*2*Nsite ));
+    EleProjCnt        = (int*)malloc(sizeof(int)*( NVMCSample*NProj ));
 //[s] MERGE BY TM
-  EleSpn            = (int*)malloc(sizeof(int)*( NVMCSample*2*Ne ));//fsz
-  EleProjBFCnt = (int*)malloc(sizeof(int)*( NVMCSample*4*4*Nsite*Nrange));
+    EleSpn            = (int*)malloc(sizeof(int)*( NVMCSample*2*Ne ));//fsz
+    EleProjBFCnt = (int*)malloc(sizeof(int)*( NVMCSample*4*4*Nsite*Nrange));
 //[e] MERGE BY TM
-  logSqPfFullSlater = (double*)malloc(sizeof(double)*(NVMCSample));
-  SmpSltElmBF_real = (double *)malloc(sizeof(double)*(NVMCSample*NQPFull*(2*Nsite)*(2*Nsite)));
-  SmpEta = (double*)malloc(sizeof(double*)*NVMCSample*NQPFull*Nsite*Nsite);
-  SmpEtaFlag = (int*)malloc(sizeof(int*)*NVMCSample*NQPFull*Nsite*Nsite);
+    logSqPfFullSlater = (double*)malloc(sizeof(double)*(NVMCSample));
+    SmpSltElmBF_real = (double *)malloc(sizeof(double)*(NVMCSample*NQPFull*(2*Nsite)*(2*Nsite)));
+    SmpEta = (double*)malloc(sizeof(double*)*NVMCSample*NQPFull*Nsite*Nsite);
+    SmpEtaFlag = (int*)malloc(sizeof(int*)*NVMCSample*NQPFull*Nsite*Nsite);
+  }else{
+    EleIdx            = (int*)malloc(sizeof(int)*( NVMCSample2*2*Ne ));
+    EleCfg            = (int*)malloc(sizeof(int)*( NVMCSample2*2*Nsite ));
+    EleNum            = (int*)malloc(sizeof(int)*( NVMCSample2*2*Nsite ));
+    EleProjCnt        = (int*)malloc(sizeof(int)*( NVMCSample2*NProj ));
+//[s] MERGE BY TM
+    EleSpn            = (int*)malloc(sizeof(int)*( NVMCSample2*2*Ne ));//fsz
+    EleProjBFCnt = (int*)malloc(sizeof(int)*( NVMCSample2*4*4*Nsite*Nrange));
+//[e] MERGE BY TM
+    logSqPfFullSlater = (double*)malloc(sizeof(double)*(NVMCSample2));
+    SmpSltElmBF_real = (double *)malloc(sizeof(double)*(NVMCSample2*NQPFull*(2*Nsite)*(2*Nsite)));
+    SmpEta = (double*)malloc(sizeof(double*)*NVMCSample2*NQPFull*Nsite*Nsite);
+    SmpEtaFlag = (int*)malloc(sizeof(int*)*NVMCSample2*NQPFull*Nsite*Nsite);
+  }
 
   TmpEleIdx         = (int*)malloc(sizeof(int)*(2*Ne+2*Nsite+2*Nsite+NProj+2*Ne));//fsz
   TmpEleCfg         = TmpEleIdx + 2*Ne;
@@ -359,7 +374,11 @@ void SetMemory() {
       if(AllComplexFlag==0 && iFlgOrbitalGeneral==0){ //real & sz=0
         SROptO_Store_real = (double *)malloc(sizeof(double)*(SROptSize*NVMCSample) );
       }else{
-        SROptO_Store      = (double complex*)malloc( sizeof(double complex)*(2*SROptSize*NVMCSample) );
+        if(NVMCSample2==0){
+          SROptO_Store      = (double complex*)malloc( sizeof(double complex)*(2*SROptSize*NVMCSample));
+        }else{
+          SROptO_Store      = (double complex*)malloc( sizeof(double complex)*(2*SROptSize*NVMCSample2));
+        }
       }
     }
 
