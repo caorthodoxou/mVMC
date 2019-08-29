@@ -567,11 +567,13 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 
   NSROptItrStep = (int) round(cycles*2.*M_PI/(wL*DSROptStepDt)) + 1;
   tc = 0.0;
-  double current[4*NSROptItrStep+3];
+  double current[4*NSROptItrStep];
   
-  for(i=0;i<4*NSROptItrStep+3;i++) fscanf(fptrack, "%lf", &(current[i]));
-  fclose(fptrack);
-  //printf("%lf\n",current[20]);
+  if(tracking==1){
+    for(i=0;i<4*NSROptItrStep;i++) fscanf(fptrack, "%lf", &(current[i]));
+    fclose(fptrack);
+  }
+  //printf("%lf, %lf, %lf\n",current[0], current[10], current[4*NSROptItrStep-1]);
   
   for(step=0;step<NSROptItrStep;step++) {
 
@@ -591,11 +593,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
       }
     }
 
-    //for(i=0;i<NPara;i++) Paran[i] = Para_new[i] = Para[i]; 
-    for(i=0;i<NPara;i++) {
-      Paran[i] = Para[i];
-      Para_new[i] = Para[i]; 
-    }
+    for(i=0;i<NPara;i++) Paran[i] = Para_new[i] = Para[i]; 
     
     //////////////////////////////////
     //Calculation of K1 term
@@ -617,7 +615,6 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, MainCal.\n", step);
 #endif
-    //clearGF = 0;
     VMCMainCal(comm_child1);
     StopTimer(4);
     StartTimer(21);
@@ -690,7 +687,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, MakeSample.\n", step);
 #endif
-    //VMCMakeSample(comm_child1);
+    VMCMakeSample(comm_child1);
     StopTimer(3);
 
     Rstage = current[4*step + 1];
@@ -699,7 +696,6 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, MainCal.\n", step);
 #endif
-    //clearGF = 0;
     VMCMainCal(comm_child1);
     StopTimer(4);
 
@@ -719,7 +715,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #endif
     WeightAverageSROpt(comm_parent);
     StopTimer(25);
-    //ReduceCounter(comm_child2);
+    ReduceCounter(comm_child2);
     StopTimer(21);
 
 #ifdef _DEBUG_DUMP_SROPTO_STORE
@@ -765,7 +761,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, MakeSample.\n", step);
 #endif
-    //VMCMakeSample(comm_child1);
+    VMCMakeSample(comm_child1);
     StopTimer(3);
 
     Rstage = current[4*step + 2];
@@ -774,7 +770,6 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, MainCal.\n", step);
 #endif
-    //clearGF = 0;
     VMCMainCal(comm_child1);
     StopTimer(4);
 
@@ -794,7 +789,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #endif
     WeightAverageSROpt(comm_parent);
     StopTimer(25);
-    //ReduceCounter(comm_child2);
+    ReduceCounter(comm_child2);
     StopTimer(21);
 
 #ifdef _DEBUG_DUMP_SROPTO_STORE
@@ -846,7 +841,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, MakeSample.\n", step);
 #endif
-    //VMCMakeSample(comm_child1);
+    VMCMakeSample(comm_child1);
     StopTimer(3);
 
     Rstage = current[4*step + 3];
@@ -855,7 +850,6 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, MainCal.\n", step);
 #endif
-    //clearGF = 0;
     VMCMainCal(comm_child1);
     StopTimer(4);
 
@@ -875,7 +869,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #endif
     WeightAverageSROpt(comm_parent);
     StopTimer(25);
-    //ReduceCounter(comm_child2);
+    ReduceCounter(comm_child2);
     StopTimer(21);
 
 #ifdef _DEBUG_DUMP_SROPTO_STORE
@@ -1074,27 +1068,7 @@ void WriteToTrans() {
 
   //printf("real %f, imag %e\n",creal(ParaTransfer[0]),cimag(ParaTransfer[0]));
 }
-/*
-void CalcPhase(double tracked) {
-  int i;
-  double complex nnsum, hopping;
-  double phiJ;
-   
-  for(i=0;i<NCisAjs;i++) nnsum += PhysCisAjs[i];
-  Rt = cabs(nnsum);	  
-  theta = carg(nnsum);
-  phiJ = asin(-tracked/(2.*a*Rt)) + theta; 
-  hopping = cexp(I*phiJ);
 
-  for(i=0;i<NTransfer;i++) {
-    if(i%2==0) {
-      ParaTransfer[i] = InitTransfer[i]*hopping;
-    }else{
-      ParaTransfer[i] = InitTransfer[i]*conj(hopping);
-    }
-  }
-}
-*/	
 void outputData() {
   int i;
 
