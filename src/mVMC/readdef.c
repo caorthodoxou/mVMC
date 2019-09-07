@@ -589,6 +589,7 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm) {
 
   NVMCCalMode = bufInt[IdxVMCCalcMode];
   RealEvolve = bufInt[IdxEvolveMode];
+  sAll = bufInt[IdxsAll];
   NLanczosMode = bufInt[IdxLanczosMode];
   NDataIdxStart = bufInt[IdxDataIdxStart];
   NDataQtySmp = bufInt[IdxDataQtySmp];
@@ -1440,6 +1441,7 @@ int GetFileName(
 void SetDefaultValuesModPara(int *bufInt, double *bufDouble) {
   bufInt[IdxVMCCalcMode] = 0;
   bufInt[IdxEvolveMode] = 0;
+  bufInt[IdxsAll] = 1;
   bufInt[IdxLanczosMode] = 0;
   bufInt[IdxDataIdxStart] = 0;
   bufInt[IdxDataQtySmp] = 1;
@@ -1553,6 +1555,8 @@ int GetInfoFromModPara(int *bufInt, double *bufDouble) {
               bufInt[IdxVMCCalcMode] = (int) dtmp;
             } else if (CheckWords(ctmp, "RealEvolve") == 0) {
               bufInt[IdxEvolveMode] = (int) dtmp;
+            } else if (CheckWords(ctmp, "sAll") == 0) {
+              bufInt[IdxsAll] = (int) dtmp;
             } else if (CheckWords(ctmp, "NLanczosMode") == 0) {
               bufInt[IdxLanczosMode] = (int) dtmp;
             } else if (CheckWords(ctmp, "NDataIdxStart") == 0) {

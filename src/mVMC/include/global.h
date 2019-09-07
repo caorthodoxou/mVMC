@@ -45,6 +45,9 @@ int RealEvolve; /* evolution in real or imaginary time
                    1: real time (tVMC) under RK1 
                    2: real time (tVMC) under RK4 */
 
+int sAll; /* 0: make samples at only first RK4 step
+	     1: make samples at every RK4 step */
+
 int NLanczosMode; /* mode of the single Lanczos step
                      0: none, 1: only energy, 2: Green functions */
 
