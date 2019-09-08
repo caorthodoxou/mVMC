@@ -237,7 +237,7 @@ int main(int argc, char* argv[])
   StopTimer(12);
   
   conversion();
-  if(RealEvolve>0) printf("wL=%e, F0=%e, a=%e, t0=%e, U=%e\n", wL, F0, a, creal(ParaTransfer[0]), creal(ParaCoulombIntra[0]));
+  if(rank0==0 && RealEvolve>0) printf("wL=%e, F0=%e, a=%e, t0=%e, U=%e\n", wL, F0, a, creal(ParaTransfer[0]), creal(ParaCoulombIntra[0]));
   
   /* split MPI coummunicator */
 #ifdef _mpi_use
