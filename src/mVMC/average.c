@@ -39,7 +39,7 @@ void weightAverageReduce_real(int n, double *vec, MPI_Comm comm);
 /* calculate average of Wc, Etot and Etot2 ;Sztot,Sztot2 for fsz*/
 /* All processes will have the result */
 void WeightAverageWE(MPI_Comm comm) {
-  const int n=5;//fsz
+  const int n=6;//fsz
   double complex invW;
   int rank,size;
   double complex send[n], recv[n];
@@ -53,6 +53,7 @@ void WeightAverageWE(MPI_Comm comm) {
     send[2] = Etot2;
     send[3] = Sztot;
     send[4] = Sztot2;
+	send[5] = Dbtot;
 
     SafeMpiAllReduce_fcmp(send,recv,n,comm);
 
@@ -62,12 +63,14 @@ void WeightAverageWE(MPI_Comm comm) {
     Etot2  = recv[2]*invW;
     Sztot  = recv[3]*invW;
     Sztot2 = recv[4]*invW;
+	Dbtot  = recv[5]*invW;
   } else {
     invW  = 1.0/Wc;
     Etot  *= invW;
     Etot2 *= invW;
     Sztot *= invW;
     Sztot2 *= invW;
+	Dbtot *= invW;
   }
 
   return;

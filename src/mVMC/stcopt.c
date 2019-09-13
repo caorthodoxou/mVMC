@@ -173,6 +173,7 @@ int StochasticOpt(MPI_Comm comm) {
 
  // printf("flag is %f \n", AllComplexFlag);
   /* update variational parameters */
+  //if(info==0) {
   if(info==0 && rank==0) {
     //#pragma omp parallel for default(shared) private(si,pi)
     #pragma loop noalias

@@ -438,7 +438,7 @@ int VMCParaOpt(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, AverageWE.\n", step);
 #endif
-    Dbtot /= Wc;
+    //Dbtot /= Wc;
     //etatot /=Wc;
     WeightAverageWE(comm_parent);
     if(RealEvolve==1) WeightAverageGreenFunc(comm_parent); 
@@ -581,11 +581,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
       }
     }
 
-    //for(i=0;i<NPara;i++) Paran[i] = Para_new[i] = Para[i]; 
-    for(i=0;i<NPara;i++) {
-      Paran[i] = Para[i];
-      Para_new[i] = Para[i]; 
-    }
+    for(i=0;i<NPara;i++) Paran[i] = Para_new[i] = Para[i]; 
 
     //////////////////////////////////
     //Calculation of K1 term
@@ -612,7 +608,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, AverageWE.\n", step);
 #endif
-    Dbtot /= Wc;
+    //Dbtot /= Wc;
     WeightAverageWE(comm_parent);
     WeightAverageGreenFunc(comm_parent); 
     StartTimer(25);//DEBUG
@@ -660,6 +656,10 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
       if(rank==0) fprintf(stderr, "Error: StcOpt info=%d step=%d\n",info,step);
       return info;
     }
+
+    StartTimer(23);
+    SyncModifiedParameter(comm_parent);
+    StopTimer(23);
 
     //////////////////////////////////
     //Calculation of K2 term
@@ -732,6 +732,10 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
       return info;
     }
     
+    StartTimer(23);
+    SyncModifiedParameter(comm_parent);
+    StopTimer(23);
+
     //////////////////////////////////
     //Calculation of K3 term
     StartTimer(20);
@@ -799,6 +803,10 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
       return info;
     }
     
+    StartTimer(23);
+    SyncModifiedParameter(comm_parent);
+    StopTimer(23);
+
     //////////////////////////////////
     //Calculation of K4 term
     tc += DSROptStepDt/2.0;
@@ -869,6 +877,10 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
       if(rank==0) fprintf(stderr, "Error: StcOpt info=%d step=%d\n",info,step);
       return info;
     }
+
+    StartTimer(23);
+    SyncModifiedParameter(comm_parent);
+    StopTimer(23);
 
     //////////////////////////////////
     //Assigns new state
