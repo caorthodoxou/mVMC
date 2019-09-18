@@ -239,7 +239,7 @@ void weightAverageReduce_fcmp(int n, double  complex *vec, MPI_Comm comm) {
 	  #pragma omp parallel for default(shared) private(i)
 	  #pragma loop noalias
 	  for(i=0;i<n;i++) vec[i] = buf[i] * invW;
-	  if(tracking==1){
+	  if(nncalc==1){
         nnsum = 0.0 + 0.0*I;
         for(i=0;i<NCisAjs;i++) nnsum += vec[i];
       }
@@ -250,7 +250,7 @@ void weightAverageReduce_fcmp(int n, double  complex *vec, MPI_Comm comm) {
     #pragma omp parallel for default(shared) private(i)
     #pragma loop noalias
     for(i=0;i<n;i++) vec[i] *= invW;
-	if(tracking==1){
+	if(nncalc==0){
       nnsum = 0.0 + 0.0*I;
       for(i=0;i<NCisAjs;i++) nnsum += vec[i];
     }

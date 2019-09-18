@@ -187,6 +187,7 @@ int sAll; /* 0: make samples at only first RK4 step
 double Rstage; 
 double phi;
 double complex nnsum=0.0+0.0*I;
+int nncalc=0;
 
 /*High Harmonic Generation Variables*/
 double tc; /* current time in simulation */

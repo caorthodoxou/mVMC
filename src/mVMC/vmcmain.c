@@ -609,7 +609,14 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     VMCMakeSample(comm_child1);
     StopTimer(3);
     
-    Rstage = current[4*step];
+    if(tracking==1){ 
+	  nncalc = 1;
+	  VMCMainCal(comm_child1);
+	  WeightAverageWE(comm_parent);
+      Rstage = current[4*step];
+	  CalcPhase();
+	  nncalc = 0;
+    }
 
     StartTimer(4);
 #ifdef _DEBUG_DETAIL
@@ -622,7 +629,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     printf("Debug: step %d, AverageWE.\n", step);
 #endif
     WeightAverageWE(comm_parent);
-    WeightAverageGreenFunc(comm_parent); 
+    if(tracking==0) WeightAverageGreenFunc(comm_parent); 
     //if(calGF==0) Dbtot /= Wc;
     StartTimer(25);//DEBUG
 #ifdef _DEBUG_DETAIL
@@ -694,7 +701,14 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     if(sAll==1) VMCMakeSample(comm_child1);
     StopTimer(3);
 
-    Rstage = current[4*step + 1];
+	if(tracking==1){
+      nncalc = 1;
+      VMCMainCal(comm_child1);
+      WeightAverageWE(comm_parent);
+      Rstage = current[4*step + 1];
+      CalcPhase();
+      nncalc = 0;
+    }
 
     StartTimer(4);
 #ifdef _DEBUG_DETAIL
@@ -708,7 +722,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     printf("Debug: step %d, AverageWE.\n", step);
 #endif
     WeightAverageWE(comm_parent);
-    WeightAverageGreenFunc(comm_parent);
+    if(tracking==0) WeightAverageGreenFunc(comm_parent);
     if(tracking==0 && rank==0) { 
       for (i = 0; i < NCisAjs; i++) fprintf(FileCisAjs, "% .18e  % .18e 0.0 ", creal(PhysCisAjs[i]), cimag(PhysCisAjs[i]));
       fprintf(FileCisAjs, "\n");
@@ -772,7 +786,14 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     if(sAll==1) VMCMakeSample(comm_child1);
     StopTimer(3);
 
-    Rstage = current[4*step + 2];
+	if(tracking==1){
+      nncalc = 1;
+      VMCMainCal(comm_child1);
+      WeightAverageWE(comm_parent);
+      Rstage = current[4*step + 2];
+      CalcPhase();
+      nncalc = 0;
+    }
 
     StartTimer(4);
 #ifdef _DEBUG_DETAIL
@@ -786,7 +807,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     printf("Debug: step %d, AverageWE.\n", step);
 #endif
     WeightAverageWE(comm_parent);
-    WeightAverageGreenFunc(comm_parent);
+    if(tracking==0) WeightAverageGreenFunc(comm_parent);
     if(tracking==0 && rank==0) {
       for (i = 0; i < NCisAjs; i++) fprintf(FileCisAjs, "% .18e  % .18e 0.0 ", creal(PhysCisAjs[i]), cimag(PhysCisAjs[i]));
       fprintf(FileCisAjs, "\n");
@@ -856,7 +877,14 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     if(sAll==1) VMCMakeSample(comm_child1);
     StopTimer(3);
 
-    Rstage = current[4*step + 3];
+	if(tracking==1){
+      nncalc = 1;
+      VMCMainCal(comm_child1);
+      WeightAverageWE(comm_parent);
+      Rstage = current[4*step + 3];
+      CalcPhase();
+      nncalc = 0;
+    }
 
     StartTimer(4);
 #ifdef _DEBUG_DETAIL
@@ -870,7 +898,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     printf("Debug: step %d, AverageWE.\n", step);
 #endif
     WeightAverageWE(comm_parent);
-    WeightAverageGreenFunc(comm_parent);
+    if(tracking==0) WeightAverageGreenFunc(comm_parent);
     if(tracking==0 && rank==0) {
       for (i = 0; i < NCisAjs; i++) fprintf(FileCisAjs, "% .18e  % .18e 0.0 ", creal(PhysCisAjs[i]), cimag(PhysCisAjs[i]));
       fprintf(FileCisAjs, "\n");

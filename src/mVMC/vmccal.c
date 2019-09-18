@@ -38,8 +38,6 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 //#define _DEBUG_VMCCAL
 //#define _DEBUG_VMCCAL_DETAIL
 
-void CalcPhase();
-//void clearGFs();
 void clearPhysQuantity();
 
 void calculateOptTransDiff(double complex *srOptO, const double complex ipAll);
@@ -100,9 +98,6 @@ void VMCMainCal(MPI_Comm comm) {
   clearPhysQuantity();
   StopTimer(24);
 
-  if(tracking==1) CalcPhase();
-  //clearGFs();
-
   for(sample=sampleStart;sample<sampleEnd;sample++) {
 
     eleIdx = EleIdx + sample*Nsize;
@@ -150,11 +145,13 @@ void VMCMainCal(MPI_Comm comm) {
       continue;
     }
 
-    if(RealEvolve>0) {
+    if((RealEvolve>0 && tracking==0) || (tracking==1 && nncalc==1)) {
       CalculateGreenFunc(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt);
       db = CalculateDoubleOccupation(eleIdx, eleCfg, eleNum, eleProjCnt);
       Dbtot += w * db/Nsite;
     }
+
+	if(nncalc==1) continue; 
     
     StartTimer(41);
     /* calculate energy */
@@ -592,6 +589,11 @@ void clearPhysQuantity(){
   Dbtot = Dbtot2 = etatot = 0.0;
 //[e] MERGE BY TM
   if(NVMCCalMode==0) {
+    if(nncalc==1){
+      vec = PhysCisAjs;
+      for(i=0;i<NCisAjs;i++) vec[i] = 0.0+0.0*I;
+      return;
+    }
     /* SROptOO, SROptHO, SROptO */
     if(NSRCG!=0){
       n = (2*SROptSize)*4; // TBC
@@ -610,10 +612,6 @@ void clearPhysQuantity(){
     vec_real = SROptOO_real;
     #pragma omp parallel for default(shared) private(i)
     for(i=0;i<n;i++) vec_real[i] = 0.0;
-    if(tracking==1){
-      vec = PhysCisAjs;
-      for(i=0;i<NCisAjs;i++) vec[i] = 0.0+0.0*I;
-    }
   } else if(NVMCCalMode==1) {
     /* CisAjs, CisAjsCktAlt, CisAjsCktAltDC */
     n = NCisAjs+NCisAjsCktAlt+NCisAjsCktAltDC;
