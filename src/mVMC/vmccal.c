@@ -564,8 +564,6 @@ void CalcPhase() {
   int i;
   double complex hopping;
 
-  //for(i=0;i<NCisAjs;i++) nnsum += PhysCisAjs[i];
-  //for(i=0;i<NCisAjs;i++) if(i%2==1) nnsum += PhysCisAjs[i];
   Rt = cabs(nnsum);
   theta = carg(nnsum);
   if(Rt==0.0){

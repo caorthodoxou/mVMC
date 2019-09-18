@@ -567,11 +567,13 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 
   NSROptItrStep = (int) round(cycles*2.*M_PI/(wL*DSROptStepDt)) + 1;
   tc = 0.0;
-  double current[4*NSROptItrStep+3];
+  double current[4*NSROptItrStep];
   
-  for(i=0;i<4*NSROptItrStep+3;i++) fscanf(fptrack, "%lf", &(current[i]));
-  fclose(fptrack);
-  //printf("%lf\n",current[20]);
+  if(tracking==1){
+    for(i=0;i<4*NSROptItrStep;i++) fscanf(fptrack, "%lf", &(current[i]));
+    fclose(fptrack);
+  }
+  //printf("%lf, %lf, %lf\n",current[0], current[10], current[4*NSROptItrStep-1]);
   
   for(step=0;step<NSROptItrStep;step++) {
 
