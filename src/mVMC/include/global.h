@@ -182,8 +182,11 @@ int gf=1; /* dictates if Green's functions are calculated during real-time evolu
 int tracking; /* =0 means normal simulation, =1 tracks the inputted current */ 
 int propGF; /* the proportion of timesteps in which the 2-body GFs are calculated */
 int calGF; 
+int sAll; /* 0: make samples at only first RK4 step
+		     1: make samples at every RK4 step */
 double Rstage; 
 double phi;
+double complex nnsum=0.0+0.0*I;
 
 /*High Harmonic Generation Variables*/
 double tc; /* current time in simulation */

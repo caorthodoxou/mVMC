@@ -38,8 +38,8 @@ along with this program. If not, see http://www.gnu.org/licenses/.
 //#define _DEBUG_VMCCAL
 //#define _DEBUG_VMCCAL_DETAIL
 
-void CalcPhase(double tracked);
-
+void CalcPhase();
+//void clearGFs();
 void clearPhysQuantity();
 
 void calculateOptTransDiff(double complex *srOptO, const double complex ipAll);
@@ -82,7 +82,7 @@ void VMCMainCal(MPI_Comm comm) {
   int sample,sampleStart,sampleEnd,sampleSize;
   int i,info,tmp_i;
 
-  /* optimazation for Kei */
+  /* optimisation for Kei */
   const int nProj=NProj;
   double complex *srOptO = SROptO;
   double         *srOptO_real = SROptO_real;
@@ -95,12 +95,13 @@ void VMCMainCal(MPI_Comm comm) {
 #endif
   SplitLoop(&sampleStart,&sampleEnd,NVMCSample,rank,size);
 
-  /* initialization */
+  /* initialisation */
   StartTimer(24);
   clearPhysQuantity();
   StopTimer(24);
 
-  if(tracking==1) CalcPhase(Rstage);
+  if(tracking==1) CalcPhase();
+  //clearGFs();
 
   for(sample=sampleStart;sample<sampleEnd;sample++) {
 
@@ -151,10 +152,8 @@ void VMCMainCal(MPI_Comm comm) {
 
     if(RealEvolve>0) {
       CalculateGreenFunc(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt);
-      if(calGF==0) {
-        db = CalculateDoubleOccupation(eleIdx, eleCfg, eleNum, eleProjCnt);
-        Dbtot += w * db/Nsite;
-      }
+      db = CalculateDoubleOccupation(eleIdx, eleCfg, eleNum, eleProjCnt);
+      Dbtot += w * db/Nsite;
     }
     
     StartTimer(41);
@@ -183,14 +182,6 @@ void VMCMainCal(MPI_Comm comm) {
       fprintf(stderr,"warning: VMCMainCal rank:%d sample:%d e=%e\n",rank,sample,creal(e)); //TBC
       continue;
     }
-
-    //if(RealEvolve>0) {
-    //  CalculateGreenFunc(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt);
-    //  if(calGF==0) {
-    //    db = CalculateDoubleOccupation(eleIdx, eleCfg, eleNum, eleProjCnt);
-    //    Dbtot += w * db/Nsite;
-    //  }
-    //}
 
     Wc += w;
     Etot  += w * e;
@@ -569,19 +560,23 @@ for(i=0;i<nProj;i++) srOptO[i+1] = (double)(eleProjCnt[i]);
   return;
 }
 
-void CalcPhase(double tracked) {
+void CalcPhase() {
   int i;
-  double complex nnsum, hopping;
+  double complex hopping;
 
-  for(i=0;i<NCisAjs;i++) nnsum += PhysCisAjs[i];
+  //for(i=0;i<NCisAjs;i++) nnsum += PhysCisAjs[i];
   //for(i=0;i<NCisAjs;i++) if(i%2==1) nnsum += PhysCisAjs[i];
   Rt = cabs(nnsum);
   theta = carg(nnsum);
-  phi = asin(-tracked/(2.*a*Rt)) + theta;
+  if(Rt==0.0){
+    phi = 0.0;
+  }else{
+    phi = asin(-Rstage/(2.*a*Rt)) + theta;
+  }
   hopping = cexp(I*phi);
 
-  for(i=0;i<NTransfer;i++) {
-    if(i%2==0) {
+  for(i=0;i<NTransfer;i++){
+    if(i%2==0){
       ParaTransfer[i] = InitTransfer[i]*hopping;
     }else{
       ParaTransfer[i] = InitTransfer[i]*conj(hopping);
@@ -617,8 +612,11 @@ void clearPhysQuantity(){
     vec_real = SROptOO_real;
     #pragma omp parallel for default(shared) private(i)
     for(i=0;i<n;i++) vec_real[i] = 0.0;
+    if(tracking==1){
+      vec = PhysCisAjs;
+      for(i=0;i<NCisAjs;i++) vec[i] = 0.0+0.0*I;
+    }
   } else if(NVMCCalMode==1) {
-  //} else if(NVMCCalMode==1 || clearGF==1) {
     /* CisAjs, CisAjsCktAlt, CisAjsCktAltDC */
     n = NCisAjs+NCisAjsCktAlt+NCisAjsCktAltDC;
     vec = PhysCisAjs;

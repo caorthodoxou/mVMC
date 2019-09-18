@@ -73,7 +73,7 @@ static char (*cFileNameListFile)[D_CharTmpReadDef];
 enum ParamIdxInt{
   IdxVMCCalcMode, IdxEvolveMode, IdxLanczosMode,  
   IdxDataIdxStart, IdxDataQtySmp, IdxNsite, IdxNe, 
-  IdxSPGaussLeg, IdxSPStot, IdxMPTrans,
+  IdxSPGaussLeg, IdxSPStot, IdxMPTrans, IdxsAll, 
   IdxSROptItrStep, IdxSROptItrSmp, IdxSROptFixSmp,
   IdxVMCWarmUp, IdxVMCInterval, IdxVMCSample,
   IdxExUpdatePath, IdxRndSeed, IdxSplitSize,

@@ -39,7 +39,7 @@ void weightAverageReduce_real(int n, double *vec, MPI_Comm comm);
 /* calculate average of Wc, Etot and Etot2 ;Sztot,Sztot2 for fsz*/
 /* All processes will have the result */
 void WeightAverageWE(MPI_Comm comm) {
-  const int n=5;//fsz
+  const int n=6;//fsz
   double complex invW;
   int rank,size;
   double complex send[n], recv[n];
@@ -53,6 +53,7 @@ void WeightAverageWE(MPI_Comm comm) {
     send[2] = Etot2;
     send[3] = Sztot;
     send[4] = Sztot2;
+	send[5] = Dbtot;
 
     SafeMpiAllReduce_fcmp(send,recv,n,comm);
 
@@ -62,12 +63,15 @@ void WeightAverageWE(MPI_Comm comm) {
     Etot2  = recv[2]*invW;
     Sztot  = recv[3]*invW;
     Sztot2 = recv[4]*invW;
+	Dbtot = recv[5]*invW;
+
   } else {
     invW  = 1.0/Wc;
     Etot  *= invW;
     Etot2 *= invW;
     Sztot *= invW;
     Sztot2 *= invW;
+	Dbtot *= invW;
   }
 
   return;
@@ -145,64 +149,6 @@ void WeightAverageSROpt_real(MPI_Comm comm) {
   }
   return;
 }
-
-
-
-/* calculate average of SROptOO and SROptHO */
-/* All processes will have the result */
-/*
-void WeightAverageSROpt_real(MPI_Comm comm) {
-  int i,n,j,int_x,int_y;
-  double invW = 1.0/Wc;
-  double *vec,*buf;
-  int rank,size;
-  MPI_Comm_rank(comm,&rank);
-  MPI_Comm_size(comm,&size);
-
-  n   = SROptSize*(SROptSize+1);
-  vec = (double*)malloc(sizeof(double)*n);
-  j   = 0;
-  #pragma omp parallel for default(shared) private(i,int_x,int_y,j)
-  #pragma loop noalias
-  for(i=0;i<4*n;i++){
-    int_x  = i%(2*SROptSize);
-    int_y  = (i-int_x)/(2*SROptSize);
-    if(int_x%2==0 && int_y%2==0){
-      j      = int_x/2+(int_y/2)*SROptSize;
-      vec[j] = creal(SROptOO[i]);// only real part TBC
-    }
-  }
-  if(size>1) {
-    RequestWorkSpaceDouble(n);
-    buf = GetWorkSpaceDouble(n);
-
-    SafeMpiAllReduce(vec,buf,n,comm);
-
-    #pragma omp parallel for default(shared) private(i)
-    #pragma loop noalias
-    for(i=0;i<n;i++) vec[i] = buf[i] * invW;
-
-    ReleaseWorkSpaceDouble();
- } else {
-    #pragma omp parallel for default(shared) private(i)
-    #pragma loop noalias
-    for(i=0;i<n;i++) vec[i] *= invW;
-  }
-  #pragma omp parallel for default(shared) private(i,int_x,int_y,j)
-  #pragma loop noalias
-  for(i=0;i<4*n;i++){
-    int_x  = i%(2*SROptSize);
-    int_y  = (i-int_x)/(2*SROptSize);
-    if(int_x%2==0 && int_y%2==0){
-      j          = int_x/2+(int_y/2)*SROptSize;
-      SROptOO[i] = vec[j];// only real part TBC
-    }
-  }
-  free(vec);
-
-  return;
-}
-*/
 
 /* calculate average of Green functions */
 /* Only rank=0 process will have the result */
@@ -285,17 +231,29 @@ void weightAverageReduce_fcmp(int n, double  complex *vec, MPI_Comm comm) {
     buf = GetWorkSpaceComplex(n);
 
     SafeMpiReduce_fcmp(vec,buf,n,comm);
-    if(rank==0) {
+	if(rank==0 && NVMCCalMode==1) {
       #pragma omp parallel for default(shared) private(i)
       #pragma loop noalias
       for(i=0;i<n;i++) vec[i] = buf[i] * invW;
-    }
+    }else{
+	  #pragma omp parallel for default(shared) private(i)
+	  #pragma loop noalias
+	  for(i=0;i<n;i++) vec[i] = buf[i] * invW;
+	  if(tracking==1){
+        nnsum = 0.0 + 0.0*I;
+        for(i=0;i<NCisAjs;i++) nnsum += vec[i];
+      }
+	}
 
     ReleaseWorkSpaceComplex();
   } else {
     #pragma omp parallel for default(shared) private(i)
     #pragma loop noalias
     for(i=0;i<n;i++) vec[i] *= invW;
+	if(tracking==1){
+      nnsum = 0.0 + 0.0*I;
+      for(i=0;i<NCisAjs;i++) nnsum += vec[i];
+    }
   }
 
   return;
