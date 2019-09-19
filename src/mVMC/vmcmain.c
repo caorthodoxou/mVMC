@@ -39,6 +39,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 int VMCPhysCal(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2);
 void conversion();
 void WriteToTrans();
+void CalcPhase();
 void outputData();
 void printUsageError();
 void printOption();
@@ -612,7 +613,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     if(tracking==1){ 
 	  nncalc = 1;
 	  VMCMainCal(comm_child1);
-	  WeightAverageWE(comm_parent);
+	  WeightAverageGreenFunc(comm_parent);
       Rstage = current[4*step];
 	  CalcPhase();
 	  nncalc = 0;
@@ -688,7 +689,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
       WriteToTrans();
     }
 
-    gf=0; /*stops Green's functions being calculated again*/
+    gf = 0;
     StartTimer(20);
     UpdateSlaterElm_fcmp();
     //UpdateQPWeight();
@@ -704,7 +705,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 	if(tracking==1){
       nncalc = 1;
       VMCMainCal(comm_child1);
-      WeightAverageWE(comm_parent);
+      WeightAverageGreenFunc(comm_parent);
       Rstage = current[4*step + 1];
       CalcPhase();
       nncalc = 0;
@@ -789,7 +790,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 	if(tracking==1){
       nncalc = 1;
       VMCMainCal(comm_child1);
-      WeightAverageWE(comm_parent);
+      WeightAverageGreenFunc(comm_parent);
       Rstage = current[4*step + 2];
       CalcPhase();
       nncalc = 0;
@@ -880,7 +881,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 	if(tracking==1){
       nncalc = 1;
       VMCMainCal(comm_child1);
-      WeightAverageWE(comm_parent);
+      WeightAverageGreenFunc(comm_parent);
       Rstage = current[4*step + 3];
       CalcPhase();
       nncalc = 0;
@@ -951,7 +952,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     //////////////////////////////////
     //Assigns new state
     for(i=0;i<NPara;i++) Para[i] = Para_new[i];
-    gf=1; 
+    gf = 1; 
 
     StartTimer(23);
     SyncModifiedParameter(comm_parent);
@@ -1089,6 +1090,29 @@ void conversion() {
   wL *= convfac*0.0001519828442;  
   a *= 1.889726125/convfac;
   F0 *= 1.944689151e-4*pow(convfac,2.);
+  return;
+}
+
+void CalcPhase() {
+  int i;
+  double complex hopping;
+
+  Rt = cabs(nnsum);
+  theta = carg(nnsum);
+  if(Rt==0.0){ 
+    phi = 0.0;
+  }else{
+    phi = asin(-Rstage/(2.*a*Rt)) + theta;
+  }
+  hopping = cexp(I*phi);
+
+  for(i=0;i<NTransfer;i++){
+    if(i%2==0){
+      ParaTransfer[i] = InitTransfer[i]*hopping;
+    }else{
+      ParaTransfer[i] = InitTransfer[i]*conj(hopping);
+    }
+  }
   return;
 }
 

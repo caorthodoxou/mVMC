@@ -147,8 +147,10 @@ void VMCMainCal(MPI_Comm comm) {
 
     if((RealEvolve>0 && tracking==0) || (tracking==1 && nncalc==1)) {
       CalculateGreenFunc(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt);
-      db = CalculateDoubleOccupation(eleIdx, eleCfg, eleNum, eleProjCnt);
-      Dbtot += w * db/Nsite;
+	  if(gf==1){
+        db = CalculateDoubleOccupation(eleIdx, eleCfg, eleNum, eleProjCnt);
+        Dbtot += w * db/Nsite;
+	  }
     }
 
 	if(nncalc==1) continue; 
@@ -557,28 +559,6 @@ for(i=0;i<nProj;i++) srOptO[i+1] = (double)(eleProjCnt[i]);
   return;
 }
 
-void CalcPhase() {
-  int i;
-  double complex hopping;
-
-  Rt = cabs(nnsum);
-  theta = carg(nnsum);
-  if(Rt==0.0){
-    phi = 0.0;
-  }else{
-    phi = asin(-Rstage/(2.*a*Rt)) + theta;
-  }
-  hopping = cexp(I*phi);
-
-  for(i=0;i<NTransfer;i++){
-    if(i%2==0){
-      ParaTransfer[i] = InitTransfer[i]*hopping;
-    }else{
-      ParaTransfer[i] = InitTransfer[i]*conj(hopping);
-    }
-  }
-}
-
 void clearPhysQuantity(){
   int i,n;
   double complex *vec;
@@ -589,11 +569,11 @@ void clearPhysQuantity(){
   Dbtot = Dbtot2 = etatot = 0.0;
 //[e] MERGE BY TM
   if(NVMCCalMode==0) {
-    if(nncalc==1){
-      vec = PhysCisAjs;
-      for(i=0;i<NCisAjs;i++) vec[i] = 0.0+0.0*I;
-      return;
-    }
+    //if(nncalc==1){
+     // vec = PhysCisAjs;
+     // for(i=0;i<NCisAjs;i++) vec[i] = 0.0+0.0*I;
+     // return;
+    //}
     /* SROptOO, SROptHO, SROptO */
     if(NSRCG!=0){
       n = (2*SROptSize)*4; // TBC
