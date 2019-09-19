@@ -95,7 +95,7 @@ void VMCMainCal(MPI_Comm comm) {
 
   /* initialisation */
   StartTimer(24);
-  clearPhysQuantity();
+  if(nncalc==0) clearPhysQuantity();
   StopTimer(24);
 
   for(sample=sampleStart;sample<sampleEnd;sample++) {
@@ -152,7 +152,7 @@ void VMCMainCal(MPI_Comm comm) {
         Dbtot += w * db/Nsite;
 	  }
     }
-
+   
 	if(nncalc==1) continue; 
     
     StartTimer(41);
