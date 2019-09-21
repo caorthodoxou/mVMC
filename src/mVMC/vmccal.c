@@ -95,7 +95,7 @@ void VMCMainCal(MPI_Comm comm) {
 
   /* initialisation */
   StartTimer(24);
-  if(nncalc==0) clearPhysQuantity();
+  clearPhysQuantity();
   StopTimer(24);
 
   for(sample=sampleStart;sample<sampleEnd;sample++) {
@@ -104,6 +104,7 @@ void VMCMainCal(MPI_Comm comm) {
     eleCfg = EleCfg + sample*Nsite2;
     eleNum = EleNum + sample*Nsite2;
     eleProjCnt = EleProjCnt + sample*NProj;
+    //if(RealEvolve==2) printf("eleNum=%d\n",eleProjCnt);
 
     StartTimer(40);
 #ifdef _DEBUG_VMCCAL
@@ -131,6 +132,8 @@ void VMCMainCal(MPI_Comm comm) {
       ip = CalculateIP_fcmp(PfM,qpStart,qpEnd,MPI_COMM_SELF);
     } 
 
+    //if(RealEvolve==2) printf("ip=%f\n",creal(ip));
+
 #ifdef _DEBUG_VMCCAL
     printf("  Debug: sample=%d: LogProjVal \n",sample);
 #endif
@@ -145,16 +148,17 @@ void VMCMainCal(MPI_Comm comm) {
       continue;
     }
 
-    if((RealEvolve>0 && tracking==0) || (tracking==1 && nncalc==1)) {
-      CalculateGreenFunc(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt);
-	  if(gf==1){
+    if((RealEvolve>0 && tracking==0) || (tracking==1 && nncalc==1)) CalculateGreenFunc(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt);
+	
+    if(RealEvolve>0 && gf==1 && nncalc==0){
         db = CalculateDoubleOccupation(eleIdx, eleCfg, eleNum, eleProjCnt);
         Dbtot += w * db/Nsite;
-	  }
     }
-   
+
+    Wc += w;
+
 	if(nncalc==1) continue; 
-    
+
     StartTimer(41);
     /* calculate energy */
 #ifdef _DEBUG_VMCCAL
@@ -182,7 +186,7 @@ void VMCMainCal(MPI_Comm comm) {
       continue;
     }
 
-    Wc += w;
+    //Wc += w;
     Etot  += w * e;
     Etot2 += w * conj(e) * e;
 
@@ -569,11 +573,11 @@ void clearPhysQuantity(){
   Dbtot = Dbtot2 = etatot = 0.0;
 //[e] MERGE BY TM
   if(NVMCCalMode==0) {
-    //if(nncalc==1){
-     // vec = PhysCisAjs;
-     // for(i=0;i<NCisAjs;i++) vec[i] = 0.0+0.0*I;
-     // return;
-    //}
+    if(nncalc==1){
+      vec = PhysCisAjs;
+      for(i=0;i<NCisAjs;i++) vec[i] = 0.0+0.0*I;
+      return;
+    }
     /* SROptOO, SROptHO, SROptO */
     if(NSRCG!=0){
       n = (2*SROptSize)*4; // TBC

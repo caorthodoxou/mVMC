@@ -613,6 +613,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     if(tracking==1){ 
 	  nncalc = 1;
 	  VMCMainCal(comm_child1);
+      //if(RealEvolve==2) for(i=0;i<NCisAjs;i++) printf("1GF[%d]=%f\n",i,PhysCisAjs[i]);
 	  WeightAverageGreenFunc(comm_parent);
       Rstage = current[4*step];
 	  CalcPhase();
@@ -1099,12 +1100,14 @@ void CalcPhase() {
 
   Rt = cabs(nnsum);
   theta = carg(nnsum);
+  //printf("Rt=%f, theta=%f\n",Rt,theta);
   if(Rt==0.0){ 
     phi = 0.0;
   }else{
     phi = asin(-Rstage/(2.*a*Rt)) + theta;
   }
   hopping = cexp(I*phi);
+  printf("phi=%f, hopping=%f+%fi\n",phi,creal(hopping),cimag(hopping));
 
   for(i=0;i<NTransfer;i++){
     if(i%2==0){
@@ -1113,6 +1116,7 @@ void CalcPhase() {
       ParaTransfer[i] = InitTransfer[i]*conj(hopping);
     }
   }
+  for(i=0;i<NTransfer;i++) printf("ParaTransfer[%d]=%f + %fi\n",i,creal(ParaTransfer[i]),cimag(ParaTransfer[i]));
   return;
 }
 
