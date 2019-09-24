@@ -148,6 +148,14 @@ void VMCMainCal(MPI_Comm comm) {
       continue;
     }
 
+    /*if(tracking==1 && nncalc==1) CalculateGreenFunc(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt);
+	
+    if(RealEvolve>0 && gf==1 && nncalc==0){
+		CalculateGreenFunc(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt);
+        db = CalculateDoubleOccupation(eleIdx, eleCfg, eleNum, eleProjCnt);
+        Dbtot += w * db/Nsite;
+    }*/
+
     if((RealEvolve>0 && tracking==0) || (tracking==1 && nncalc==1)) CalculateGreenFunc(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt);
 	
     if(RealEvolve>0 && gf==1 && nncalc==0){
@@ -249,8 +257,6 @@ void VMCMainCal(MPI_Comm comm) {
         }
       } 
     
-      //below needs to extended for cases where NLanczosMode>1
-      //if(RealEvolve>0) CalculateGreenFunc(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt);
       StopTimer(43);
     
     } else if(NVMCCalMode==1) {

@@ -556,14 +556,15 @@ int VMCParaOpt(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2)
 int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2) {
   int step;
   int info;
-  int rank;
+  int rank, size;
   int tmp_i;//DEBUG
   int iprogress;
   int i;
   FILE *fptrack = fopen("tracking_data.dat", "r");
 
   MPI_Comm_rank(comm_parent, &rank);
-  
+  MPI_Comm_size(comm_parent, &size);
+ 
   InitFilePhysCal(0, rank);  
 
   NSROptItrStep = (int) round(cycles*2.*M_PI/(wL*DSROptStepDt)) + 1;
@@ -613,10 +614,10 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     if(tracking==1){ 
 	  nncalc = 1;
 	  VMCMainCal(comm_child1);
-      //if(RealEvolve==2) for(i=0;i<NCisAjs;i++) printf("1GF[%d]=%f\n",i,PhysCisAjs[i]);
 	  WeightAverageGreenFunc(comm_parent);
       Rstage = current[4*step];
 	  CalcPhase();
+	  if(size>1) MPI_Bcast(Para, NPara, MPI_DOUBLE_COMPLEX, 0, comm_parent);
 	  nncalc = 0;
     }
 
@@ -631,7 +632,8 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     printf("Debug: step %d, AverageWE.\n", step);
 #endif
     WeightAverageWE(comm_parent);
-    if(tracking==0) WeightAverageGreenFunc(comm_parent); 
+    WeightAverageGreenFunc(comm_parent); 
+    //if(tracking==0) WeightAverageGreenFunc(comm_parent); 
     //if(calGF==0) Dbtot /= Wc;
     StartTimer(25);//DEBUG
 #ifdef _DEBUG_DETAIL
@@ -709,6 +711,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
       WeightAverageGreenFunc(comm_parent);
       Rstage = current[4*step + 1];
       CalcPhase();
+      if(size>1) MPI_Bcast(Para, NPara, MPI_DOUBLE_COMPLEX, 0, comm_parent);
       nncalc = 0;
     }
 
@@ -794,6 +797,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
       WeightAverageGreenFunc(comm_parent);
       Rstage = current[4*step + 2];
       CalcPhase();
+      if(size>1) MPI_Bcast(Para, NPara, MPI_DOUBLE_COMPLEX, 0, comm_parent);
       nncalc = 0;
     }
 
@@ -885,6 +889,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
       WeightAverageGreenFunc(comm_parent);
       Rstage = current[4*step + 3];
       CalcPhase();
+      if(size>1) MPI_Bcast(Para, NPara, MPI_DOUBLE_COMPLEX, 0, comm_parent);
       nncalc = 0;
     }
 
@@ -1107,7 +1112,7 @@ void CalcPhase() {
     phi = asin(-Rstage/(2.*a*Rt)) + theta;
   }
   hopping = cexp(I*phi);
-  printf("phi=%f, hopping=%f+%fi\n",phi,creal(hopping),cimag(hopping));
+  //printf("phi=%f, hopping=%f+%fi\n",phi,creal(hopping),cimag(hopping));
 
   for(i=0;i<NTransfer;i++){
     if(i%2==0){
@@ -1116,7 +1121,7 @@ void CalcPhase() {
       ParaTransfer[i] = InitTransfer[i]*conj(hopping);
     }
   }
-  for(i=0;i<NTransfer;i++) printf("ParaTransfer[%d]=%f + %fi\n",i,creal(ParaTransfer[i]),cimag(ParaTransfer[i]));
+  //for(i=0;i<NTransfer;i++) printf("ParaTransfer[%d]=%f + %fi\n",i,creal(ParaTransfer[i]),cimag(ParaTransfer[i]));
   return;
 }
 

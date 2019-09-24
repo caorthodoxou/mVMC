@@ -250,7 +250,6 @@ void weightAverageReduce_fcmp(int n, double  complex *vec, MPI_Comm comm) {
     #pragma omp parallel for default(shared) private(i)
     #pragma loop noalias
     for(i=0;i<n;i++) vec[i] *= invW;
-    //printf("invW = %f\n",invW);
     //if(RealEvolve==2) for(i=0;i<NCisAjs;i++) printf("vec[%d]=%f\n",i,vec[i]);
 	if(nncalc==1){
       nnsum = 0.0 + 0.0*I;
