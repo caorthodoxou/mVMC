@@ -617,7 +617,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 	  WeightAverageGreenFunc(comm_parent);
       Rstage = current[4*step];
 	  CalcPhase();
-	  if(size>1) MPI_Bcast(Para, NPara, MPI_DOUBLE_COMPLEX, 0, comm_parent);
+	  //if(size>1) MPI_Bcast(Para, NPara, MPI_DOUBLE_COMPLEX, 0, comm_parent);
 	  nncalc = 0;
     }
 
@@ -632,8 +632,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     printf("Debug: step %d, AverageWE.\n", step);
 #endif
     WeightAverageWE(comm_parent);
-    WeightAverageGreenFunc(comm_parent); 
-    //if(tracking==0) WeightAverageGreenFunc(comm_parent); 
+    if(tracking==0) WeightAverageGreenFunc(comm_parent); 
     //if(calGF==0) Dbtot /= Wc;
     StartTimer(25);//DEBUG
 #ifdef _DEBUG_DETAIL
@@ -711,7 +710,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
       WeightAverageGreenFunc(comm_parent);
       Rstage = current[4*step + 1];
       CalcPhase();
-      if(size>1) MPI_Bcast(Para, NPara, MPI_DOUBLE_COMPLEX, 0, comm_parent);
+      //if(size>1) MPI_Bcast(Para, NPara, MPI_DOUBLE_COMPLEX, 0, comm_parent);
       nncalc = 0;
     }
 
@@ -797,7 +796,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
       WeightAverageGreenFunc(comm_parent);
       Rstage = current[4*step + 2];
       CalcPhase();
-      if(size>1) MPI_Bcast(Para, NPara, MPI_DOUBLE_COMPLEX, 0, comm_parent);
+      //if(size>1) MPI_Bcast(Para, NPara, MPI_DOUBLE_COMPLEX, 0, comm_parent);
       nncalc = 0;
     }
 
@@ -889,7 +888,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
       WeightAverageGreenFunc(comm_parent);
       Rstage = current[4*step + 3];
       CalcPhase();
-      if(size>1) MPI_Bcast(Para, NPara, MPI_DOUBLE_COMPLEX, 0, comm_parent);
+      //if(size>1) MPI_Bcast(Para, NPara, MPI_DOUBLE_COMPLEX, 0, comm_parent);
       nncalc = 0;
     }
 
