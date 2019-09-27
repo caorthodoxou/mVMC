@@ -579,9 +579,6 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
   
   for(step=0;step<NSROptItrStep;step++) {
 
-    //if calGF=0 then two-body GFs are calculated
-    //calGF = step%propGF;
-
     //printf("0 DUBUG make:step=%d TwoSz=%d\n",step,TwoSz);
     if(rank==0){
       OutputTime(step);
@@ -617,7 +614,6 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 	  WeightAverageGreenFunc(comm_parent);
       Rstage = current[4*step];
 	  CalcPhase();
-	  //if(size>1) MPI_Bcast(Para, NPara, MPI_DOUBLE_COMPLEX, 0, comm_parent);
 	  nncalc = 0;
     }
 
@@ -710,7 +706,6 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
       WeightAverageGreenFunc(comm_parent);
       Rstage = current[4*step + 1];
       CalcPhase();
-      //if(size>1) MPI_Bcast(Para, NPara, MPI_DOUBLE_COMPLEX, 0, comm_parent);
       nncalc = 0;
     }
 
@@ -796,7 +791,6 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
       WeightAverageGreenFunc(comm_parent);
       Rstage = current[4*step + 2];
       CalcPhase();
-      //if(size>1) MPI_Bcast(Para, NPara, MPI_DOUBLE_COMPLEX, 0, comm_parent);
       nncalc = 0;
     }
 
@@ -888,7 +882,6 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
       WeightAverageGreenFunc(comm_parent);
       Rstage = current[4*step + 3];
       CalcPhase();
-      //if(size>1) MPI_Bcast(Para, NPara, MPI_DOUBLE_COMPLEX, 0, comm_parent);
       nncalc = 0;
     }
 

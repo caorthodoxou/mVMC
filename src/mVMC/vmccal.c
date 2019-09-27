@@ -104,7 +104,6 @@ void VMCMainCal(MPI_Comm comm) {
     eleCfg = EleCfg + sample*Nsite2;
     eleNum = EleNum + sample*Nsite2;
     eleProjCnt = EleProjCnt + sample*NProj;
-    //if(RealEvolve==2) printf("eleNum=%d\n",eleProjCnt);
 
     StartTimer(40);
 #ifdef _DEBUG_VMCCAL
@@ -147,14 +146,6 @@ void VMCMainCal(MPI_Comm comm) {
       fprintf(stderr,"warning: VMCMainCal rank:%d sample:%d w=%e\n",rank,sample,w);
       continue;
     }
-
-    /*if(tracking==1 && nncalc==1) CalculateGreenFunc(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt);
-	
-    if(RealEvolve>0 && gf==1 && nncalc==0){
-		CalculateGreenFunc(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt);
-        db = CalculateDoubleOccupation(eleIdx, eleCfg, eleNum, eleProjCnt);
-        Dbtot += w * db/Nsite;
-    }*/
 
     if((RealEvolve>0 && tracking==0) || (tracking==1 && nncalc==1)) CalculateGreenFunc(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt);
 	
