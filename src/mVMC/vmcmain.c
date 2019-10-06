@@ -1,4 +1,4 @@
-/*
+#/*
 mVMC - A numerical solver package for a wide range of quantum lattice models based on many-variable Variational Monte Carlo method
 Copyright (C) 2016 The University of Tokyo, All rights reserved.
 
@@ -1098,14 +1098,21 @@ void CalcPhase() {
   Rt = cabs(nnsum);
   theta = carg(nnsum);
   //printf("Rt=%f, theta=%f\n",Rt,theta);
-  if(Rt==0.0){ 
-    phi = 0.0;
+  if(tham==0){
+    if(Rt==0.0){ 
+      phi = 0.0;
+    }else{
+      phi = asin(-Rstage/(2.*a*Rt)) + theta;
+    }
+    hopping = cexp(I*phi);
   }else{
-    phi = asin(-Rstage/(2.*a*Rt)) + theta;
+    hopping = csqrt(1.-pow(Rstage,2.)/(4.*pow(a,2.)*pow(Rt,2.)));
+    hopping -= I*Rstage/(2.*a*Rt);
+    hopping *= cexp(I*theta);
+    phi = -I*clog(hopping);
   }
-  hopping = cexp(I*phi);
   //printf("phi=%f, hopping=%f+%fi\n",phi,creal(hopping),cimag(hopping));
-
+ 
   for(i=0;i<NTransfer;i++){
     if(i%2==0){
       ParaTransfer[i] = InitTransfer[i]*hopping;
