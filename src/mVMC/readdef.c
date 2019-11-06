@@ -631,7 +631,6 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm) {
   propGF = bufInt[IdxpropGF];
   tracking = bufInt[Idxtracking];
   sAll = bufInt[IdxsAll];
-  tham = bufInt[Idxtham];
   wL = bufDouble[IdxwL];
   F0 = bufDouble[IdxF0];
   a = bufDouble[IdxaLattice];
@@ -1488,7 +1487,6 @@ void SetDefaultValuesModPara(int *bufInt, double *bufDouble) {
   bufInt[IdxpropGF] = 10;
   bufInt[Idxtracking] = 0;
   bufInt[IdxsAll] = 1;
-  bufInt[Idxtham] = 0;
   bufDouble[IdxwL]= 32.9;
   bufDouble[IdxF0] = 10.0;
   bufDouble[IdxaLattice] = 4.0;
@@ -1596,8 +1594,6 @@ int GetInfoFromModPara(int *bufInt, double *bufDouble) {
               bufDouble[IdxwL] = (double) dtmp;
 			} else if (CheckWords(ctmp, "sAll") == 0) {
               bufInt[IdxsAll] = (int) dtmp;
-			} else if (CheckWords(ctmp, "tham") == 0) {
-              bufInt[Idxtham] = (int) dtmp;
             } else if (CheckWords(ctmp, "F0") == 0) {
               bufDouble[IdxF0] = (double) dtmp;
             } else if (CheckWords(ctmp, "a") == 0) {

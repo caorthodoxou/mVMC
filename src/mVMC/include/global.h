@@ -188,8 +188,6 @@ double Rstage;
 double phi;
 double complex nnsum=0.0+0.0*I;
 int nncalc=0;
-int tham; /*0: control field is calculated using arcsin form
-			1: control field is calculated using tracking hamiltonian */
 
 /*High Harmonic Generation Variables*/
 double tc; /* current time in simulation */
