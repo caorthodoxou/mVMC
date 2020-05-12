@@ -219,14 +219,14 @@ void weightAverageReduce(int n, double *vec, MPI_Comm comm) {
 }
 
 void weightAverageReduce_fcmp(int n, double  complex *vec, MPI_Comm comm) {
-  int i;
+  int i, ni;
   const double complex invW = 1.0/Wc;
   double complex *buf;
   int rank,size;
   MPI_Comm_rank(comm,&rank);
   MPI_Comm_size(comm,&size);
 
-  if(size>1) {
+  if(size>1){
     RequestWorkSpaceComplex(n);
     buf = GetWorkSpaceComplex(n);
 	
@@ -243,7 +243,21 @@ void weightAverageReduce_fcmp(int n, double  complex *vec, MPI_Comm comm) {
 	    #pragma loop noalias
 		for(i=0;i<n;i++) vec[i] = buf[i] * invW/((double)size);
         nnsum = 0.0 + 0.0*I;
-        for(i=0;i<NCisAjs;i++) nnsum += vec[i];
+        if(dim==1){
+          for(i=0;i<NCisAjs;i++) nnsum += vec[i];
+        }else if(dim==2){
+          nnsumy = 0.0 + 0.0*I;
+          for(i=0;i<2*Nsite;i++){
+            ni = 2*i;
+            if(i%2==0){
+              nnsum += vec[ni]; 
+              nnsum += vec[ni+1]; 
+            }else{
+              nnsumy += vec[ni]; 
+              nnsumy += vec[ni+1]; 
+            }
+          }
+        }
 	  }else{
 	    #pragma omp parallel for default(shared) private(i)
 	    #pragma loop noalias

@@ -175,18 +175,24 @@ int FlagBinary=0;
 /* flag for file flush */
 int NFileFlushInterval=1;
 
-double Rt; /* magnitude of the sum of the nearest-neighbour expectations */
-double theta; /* phase of the sum of the nearest-neighbour expectations */
+double Rt, Rty; /* magnitude of the sum of the nearest-neighbour expectations */
+double theta, thetay; /* phase of the sum of the nearest-neighbour expectations */
 double factor, factor2; /*used in Runge-Kutta*/
+int dim; /* dimension of the system */
 int gf=1; /* dictates if Green's functions are calculated during real-time evolution */
 int tracking; /* =0 means normal simulation, =1 tracks the inputted current */ 
+int carrierx, carriery; /*=0 is sin, =1 is cos*/
 int propGF; /* the proportion of timesteps in which the 2-body GFs are calculated */
 int calGF; 
 int sAll; /* 0: make samples at only first RK4 step
 		     1: make samples at every RK4 step */
+double scalefactorx, scalefactory;
+double ellip; /*=2 means ellipticity is not included, otherwise -1<=ellip<=1 */ 
 double Rstage; 
-double phi;
+double Rstagey; 
+double phi, phiy;
 double complex nnsum=0.0+0.0*I;
+double complex nnsumy=0.0+0.0*I;
 int nncalc=0;
 
 /*High Harmonic Generation Variables*/

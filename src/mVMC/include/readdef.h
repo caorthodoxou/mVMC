@@ -84,6 +84,8 @@ enum ParamIdxInt{
 	IdxNQPTrans, IdxNOneBodyG, IdxNTwoBodyG,
   IdxNTwoBodyGEx, IdxNInterAll, IdxNQPOptTrans,
   IdxSROptCGMaxIter, IdxpropGF, Idxtracking,
+  Idxcarrierx, Idxcarriery, Idxdim,
+  Idxscalefactorx, Idxscalefactory,
   IdxNBF,IdxNrange, IdxNNz, Idx2Sz, IdxNCond,
   ParamIdxInt_End
 };
@@ -91,7 +93,7 @@ enum ParamIdxInt{
 enum ParamIdxDouble{
   IdxwL, IdxF0, IdxaLattice, Idxcycles, 
   IdxSROptRedCut, IdxSROptStaDel, IdxSROptStepDt,
-  IdxSROptCGTol,
+  IdxSROptCGTol, Idxellip, 
   ParamIdxDouble_End
 };
 

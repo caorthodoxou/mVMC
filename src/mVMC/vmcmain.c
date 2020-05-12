@@ -39,6 +39,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 int VMCPhysCal(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2);
 void conversion();
 void WriteToTrans();
+void WriteToTrans2();
 void CalcPhase();
 void outputData();
 void printUsageError();
@@ -560,7 +561,6 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
   int tmp_i;//DEBUG
   int iprogress;
   int i;
-  FILE *fptrack = fopen("tracking_data.dat", "r");
 
   MPI_Comm_rank(comm_parent, &rank);
   MPI_Comm_size(comm_parent, &size);
@@ -570,12 +570,40 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
   NSROptItrStep = (int) round(cycles*2.*M_PI/(wL*DSROptStepDt)) + 1;
   tc = 0.0;
   double current[4*NSROptItrStep];
-  
+  double currenty[4*NSROptItrStep];
+  double cphi[4*NSROptItrStep];
+  double cphiy[4*NSROptItrStep];
+
   if(tracking==1){
-    for(i=0;i<4*NSROptItrStep;i++) fscanf(fptrack, "%lf", &(current[i]));
-    fclose(fptrack);
+    if(dim==1){
+      FILE *fptrack = fopen("tracking_data.dat", "r");
+      for(i=0;i<4*NSROptItrStep;i++) fscanf(fptrack, "%lf", &(current[i]));
+      fclose(fptrack);
+      for(i=0;i<4*NSROptItrStep;i++) current[i] *= scalefactorx;
+    }
+    else if(dim==2){
+      FILE *fptrack = fopen("tracking_data_x.dat", "r");
+      for(i=0;i<4*NSROptItrStep;i++) fscanf(fptrack, "%lf", &(current[i]));
+      fclose(fptrack);
+      for(i=0;i<4*NSROptItrStep;i++) current[i] *= scalefactorx;
+
+      FILE *fptracky = fopen("tracking_data_y.dat", "r");
+      for(i=0;i<4*NSROptItrStep;i++) fscanf(fptracky, "%lf", &(currenty[i]));
+      fclose(fptracky);
+      for(i=0;i<4*NSROptItrStep;i++) currenty[i] *= scalefactory;
+    }
   }
-  //printf("%lf, %lf, %lf\n",current[0], current[10], current[4*NSROptItrStep-1]);
+
+  if(tracking==2){
+    FILE *phitrack = fopen("phi_fitted.dat", "r");
+    for(i=0;i<4*NSROptItrStep;i++) fscanf(phitrack, "%lf", &(cphi[i]));
+    fclose(phitrack);
+    if(dim==2){
+      FILE *phitracky = fopen("phi_fitted_y.dat", "r");
+      for(i=0;i<4*NSROptItrStep;i++) fscanf(phitracky, "%lf", &(cphiy[i]));
+      fclose(phitracky);
+    }
+  }
   
   for(step=0;step<NSROptItrStep;step++) {
 
@@ -613,8 +641,15 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 	  VMCMainCal(comm_child1);
 	  WeightAverageGreenFunc(comm_parent);
       Rstage = current[4*step];
+      if(dim==2) Rstagey = currenty[4*step];
 	  CalcPhase();
 	  nncalc = 0;
+    }
+
+    if(tracking==2){
+      phi = cphi[4*step];
+      if(dim==2) phiy = cphiy[4*step];
+      WriteToTrans2();
     }
 
     StartTimer(4);
@@ -705,8 +740,15 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
       VMCMainCal(comm_child1);
       WeightAverageGreenFunc(comm_parent);
       Rstage = current[4*step + 1];
+      if(dim==2) Rstagey = currenty[4*step + 1];
       CalcPhase();
       nncalc = 0;
+    }
+
+    if(tracking==2){
+      phi = cphi[4*step + 1];
+      if(dim==2) phiy = cphiy[4*step + 1];
+      WriteToTrans2();
     }
 
     StartTimer(4);
@@ -790,8 +832,15 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
       VMCMainCal(comm_child1);
       WeightAverageGreenFunc(comm_parent);
       Rstage = current[4*step + 2];
+      if(dim==2) Rstagey = currenty[4*step + 2];
       CalcPhase();
       nncalc = 0;
+    }
+
+    if(tracking==2){
+      phi = cphi[4*step + 2];
+      if(dim==2) phiy = cphiy[4*step + 2];
+      WriteToTrans2();
     }
 
     StartTimer(4);
@@ -881,8 +930,15 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
       VMCMainCal(comm_child1);
       WeightAverageGreenFunc(comm_parent);
       Rstage = current[4*step + 3];
+      if(dim==2) Rstagey = currenty[4*step + 3];
       CalcPhase();
       nncalc = 0;
+    }
+
+    if(tracking==2){
+      phi = cphi[4*step + 3];
+      if(dim==2) phiy = cphiy[4*step + 3];
+      WriteToTrans2();
     }
 
     StartTimer(4);
@@ -1092,12 +1148,11 @@ void conversion() {
 }
 
 void CalcPhase() {
-  int i;
-  double complex hopping;
+  int i, n;
+  double complex hopping, hoppingy;
 
   Rt = cabs(nnsum);
   theta = carg(nnsum);
-  //printf("Rt=%f, theta=%f\n",Rt,theta);
   if(Rt==0.0){ 
     phi = 0.0;
   }else{
@@ -1106,37 +1161,121 @@ void CalcPhase() {
   hopping = cexp(I*phi);
   //printf("phi=%f, hopping=%f+%fi\n",phi,creal(hopping),cimag(hopping));
 
-  for(i=0;i<NTransfer;i++){
-    if(i%2==0){
-      ParaTransfer[i] = InitTransfer[i]*hopping;
+  if(dim==1){
+    for(i=0;i<NTransfer;i++){
+      if(i%2==0){
+        ParaTransfer[i] = InitTransfer[i]*hopping;
+      }else{
+        ParaTransfer[i] = InitTransfer[i]*conj(hopping);
+      }
+    }
+  }else if(dim==2){
+    Rty = cabs(nnsumy);
+    thetay = carg(nnsumy);
+    if(Rt==0.0){ 
+      phiy = 0.0;
     }else{
-      ParaTransfer[i] = InitTransfer[i]*conj(hopping);
+      phiy = asin(-Rstagey/(2.*a*Rty)) + thetay;
+    }
+    hoppingy = cexp(I*phiy);
+
+    for(i=0;i<2*Nsite;i++){
+      n = 4*i;
+      if(i%2==0){
+        ParaTransfer[n] = ParaTransfer[n+2] = InitTransfer[n]*hopping;
+        ParaTransfer[n+1] = ParaTransfer[n+3] = InitTransfer[n]*conj(hopping);
+      }else{
+        ParaTransfer[n] = ParaTransfer[n+2] = InitTransfer[n]*hoppingy;
+        ParaTransfer[n+1] = ParaTransfer[n+3] = InitTransfer[n]*conj(hoppingy);
+      }
     }
   }
-  //for(i=0;i<NTransfer;i++) printf("ParaTransfer[%d]=%f + %fi\n",i,creal(ParaTransfer[i]),cimag(ParaTransfer[i]));
   return;
 }
 
 void WriteToTrans() {
-  double complex hopping;
-  int i;
+  int i, n;
+  double complex hopping, hoppingy;
+  double ellipx, ellipy;
 
-  phi = a*F0/wL * pow(sin(wL*tc/(2.*cycles)),2.) * sin(wL*tc);
-  hopping = cexp(I*phi);
-  //printf("%e\n",phi);
+  if(carrierx==0){
+    phi = a*F0/wL * pow(sin(wL*tc/(2.*cycles)), 2.) * sin(wL*tc);
+  }else{
+    phi = a*F0/wL * pow(sin(wL*tc/(2.*cycles)), 2.) * cos(wL*tc);
+  }
   //printf("real hop %e, imag hop %e \n",creal(hopping),cimag(hopping));
 
-  for(i=0;i<NTransfer;i++) {
-    if(i%2==0) {
-      //ParaTransfer[i] = hopping;
-      ParaTransfer[i] = InitTransfer[i]*hopping;
-    }else{
-      //ParaTransfer[i] = conj(hopping);
-      ParaTransfer[i] = InitTransfer[i]*conj(hopping);
+  if(dim==1){
+    hopping = cexp(I*phi);
+    for(i=0;i<NTransfer;i++){
+      if(i%2==0){
+        ParaTransfer[i] = InitTransfer[i]*hopping;
+      }else{
+        ParaTransfer[i] = InitTransfer[i]*conj(hopping);
+      }
     }
-  }
+  }else if(dim==2){
+    if(carriery==0){
+      phiy = a*F0/wL * pow(sin(wL*tc/(2.*cycles)), 2.) * sin(wL*tc);
+    }else{
+      phiy = a*F0/wL * pow(sin(wL*tc/(2.*cycles)), 2.) * cos(wL*tc);
+    }
 
-  //printf("real %f, imag %e\n",creal(ParaTransfer[0]),cimag(ParaTransfer[0]));
+    if(ellip==2.){
+      ellipx = ellipy = 1.;        
+    }else{
+      ellipx = 1./sqrt(1. + pow(ellip, 2.));
+      ellipy = ellip*ellipx;
+    }
+
+    phi *= ellipx;
+    phiy *= ellipy;
+    hopping = cexp(I*phi);
+    hoppingy = cexp(I*phiy);
+
+    for(i=0;i<2*Nsite;i++){
+      n = 4*i;
+      if(i%2==0){
+        ParaTransfer[n] = ParaTransfer[n+2] = InitTransfer[n]*hopping;
+        ParaTransfer[n+1] = ParaTransfer[n+3] = InitTransfer[n]*conj(hopping);
+      }else{
+        ParaTransfer[n] = ParaTransfer[n+2] = InitTransfer[n]*hoppingy;
+        ParaTransfer[n+1] = ParaTransfer[n+3] = InitTransfer[n]*conj(hoppingy);
+      }
+    }
+    
+  }
+  return;
+}
+
+void WriteToTrans2() {
+  int i, n;
+  double complex hopping, hoppingy;
+
+  hopping = cexp(I*phi);
+  if(dim==1){
+    for(i=0;i<NTransfer;i++){
+      if(i%2==0){
+        ParaTransfer[i] = InitTransfer[i]*hopping;
+      }else{
+        ParaTransfer[i] = InitTransfer[i]*conj(hopping);
+      }
+    }
+  }else if(dim==2){
+    hoppingy = cexp(I*phiy);
+
+    for(i=0;i<2*Nsite;i++){
+      n = 4*i;
+      if(i%2==0){
+        ParaTransfer[n] = ParaTransfer[n+2] = InitTransfer[n]*hopping;
+        ParaTransfer[n+1] = ParaTransfer[n+3] = InitTransfer[n]*conj(hopping);
+      }else{
+        ParaTransfer[n] = ParaTransfer[n+2] = InitTransfer[n]*hoppingy;
+        ParaTransfer[n+1] = ParaTransfer[n+3] = InitTransfer[n]*conj(hoppingy);
+      }
+    }
+    
+  }
   return;
 }
 
@@ -1171,7 +1310,7 @@ void outputData() {
     /* zvo_out.dat */
     //fprintf(FileOut, "% .18e % .18e  % .18e % .18e %.18e %.18e\n", creal(Etot),cimag(Etot), creal(Etot2), creal((Etot2 - Etot*Etot)/(Etot*Etot)),creal(Sztot),creal(Sztot2));
     //fprintf(FileOut, "% .18e % .18e  % .18e % .18e %.18e %.18e\n", creal(Etot),cimag(Etot), creal(Etot2), creal((Etot2 - Etot*Etot)/(Etot*Etot)),creal(Sztot),creal(Dbtot));
-    fprintf(FileOut, "% .18e % .18e  % .18e % .18e %.18e %.18e\n", creal(Etot), creal((Etot2 - Etot*Etot)/(Etot*Etot)), Rt, theta, phi, Dbtot);
+    fprintf(FileOut, "% .18e % .18e  % .18e % .18e %.18e %.18e\n", creal(Etot), Rt, Rty, theta, thetay, phi, phiy, Dbtot);
     /* zvo_var.dat */
     if (FlagBinary == 0) { /* formatted output*/
       fprintf(FileVar, "% .18e % .18e 0.0 % .18e % .18e 0.0 ", creal(Etot), cimag(Etot), creal(Etot2), cimag(Etot2));

@@ -630,7 +630,13 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm) {
   NSROptCGMaxIter = bufInt[IdxSROptCGMaxIter];
   propGF = bufInt[IdxpropGF];
   tracking = bufInt[Idxtracking];
+  carrierx = bufInt[Idxcarrierx];
+  carriery = bufInt[Idxcarriery];
+  dim = bufInt[Idxdim];
   sAll = bufInt[IdxsAll];
+  scalefactorx = bufDouble[Idxscalefactorx];
+  scalefactory = bufDouble[Idxscalefactory];
+  ellip = bufDouble[Idxellip];
   wL = bufDouble[IdxwL];
   F0 = bufDouble[IdxF0];
   a = bufDouble[IdxaLattice];
@@ -1486,7 +1492,13 @@ void SetDefaultValuesModPara(int *bufInt, double *bufDouble) {
   bufInt[IdxNCond] = -1;
   bufInt[IdxpropGF] = 10;
   bufInt[Idxtracking] = 0;
+  bufInt[Idxcarrierx] = 0;
+  bufInt[Idxcarriery] = 0;
+  bufInt[Idxdim] = 2;
   bufInt[IdxsAll] = 1;
+  bufDouble[Idxscalefactorx] = 1.0;
+  bufDouble[Idxscalefactory] = 1.0;
+  bufDouble[Idxellip]= 2.0;
   bufDouble[IdxwL]= 32.9;
   bufDouble[IdxF0] = 10.0;
   bufDouble[IdxaLattice] = 4.0;
@@ -1574,6 +1586,12 @@ int GetInfoFromModPara(int *bufInt, double *bufDouble) {
               bufInt[IdxpropGF] = (int) dtmp;
             } else if (CheckWords(ctmp, "tracking") == 0) {
               bufInt[Idxtracking] = (int) dtmp;
+            } else if (CheckWords(ctmp, "carrierx") == 0) {
+              bufInt[Idxcarrierx] = (int) dtmp;
+            } else if (CheckWords(ctmp, "carriery") == 0) {
+              bufInt[Idxcarriery] = (int) dtmp;
+            } else if (CheckWords(ctmp, "dim") == 0) {
+              bufInt[Idxdim] = (int) dtmp;
             } else if (CheckWords(ctmp, "2Sz") == 0) {
               bufInt[Idx2Sz] = (int) dtmp;
               if (bufInt[Idx2Sz] == -1) {
@@ -1590,6 +1608,12 @@ int GetInfoFromModPara(int *bufInt, double *bufDouble) {
               bufInt[IdxSROptItrStep] = (int) dtmp;
             } else if (CheckWords(ctmp, "NSROptItrSmp") == 0) {
               bufInt[IdxSROptItrSmp] = (int) dtmp;
+            } else if (CheckWords(ctmp, "scalefactorx") == 0) {
+              bufDouble[Idxscalefactorx] = (double) dtmp;
+            } else if (CheckWords(ctmp, "scalefactory") == 0) {
+              bufDouble[Idxscalefactory] = (double) dtmp;
+            } else if (CheckWords(ctmp, "ellip") == 0) {
+              bufDouble[Idxellip] = (double) dtmp;
             } else if (CheckWords(ctmp, "wL") == 0) {
               bufDouble[IdxwL] = (double) dtmp;
 			} else if (CheckWords(ctmp, "sAll") == 0) {
