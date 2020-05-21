@@ -147,7 +147,7 @@ void VMCMainCal(MPI_Comm comm) {
       continue;
     }
 
-    if((RealEvolve>0 && tracking==0) || (tracking==1 && nncalc==1)) CalculateGreenFunc(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt);
+    if((RealEvolve>0 && tracking==0) || tracking==2 || (tracking==1 && nncalc==1)) CalculateGreenFunc(w,ip,eleIdx,eleCfg,eleNum,eleProjCnt);
 	
     if(RealEvolve>0 && gf==1 && nncalc==0){
         db = CalculateDoubleOccupation(eleIdx, eleCfg, eleNum, eleProjCnt);

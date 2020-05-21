@@ -662,8 +662,9 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, AverageWE.\n", step);
 #endif
+
     WeightAverageWE(comm_parent);
-    if(tracking==0) WeightAverageGreenFunc(comm_parent); 
+    if(tracking!=1) WeightAverageGreenFunc(comm_parent); 
     //if(calGF==0) Dbtot /= Wc;
     StartTimer(25);//DEBUG
 #ifdef _DEBUG_DETAIL
@@ -721,7 +722,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
       tc += DSROptStepDt/2.0; 
       WriteToTrans();
     }
-
+    
     gf = 0;
     StartTimer(20);
     UpdateSlaterElm_fcmp();
@@ -763,16 +764,20 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     printf("Debug: step %d, AverageWE.\n", step);
 #endif
     WeightAverageWE(comm_parent);
-    if(tracking==0) WeightAverageGreenFunc(comm_parent);
-    if(tracking==0 && rank==0) { 
+
+    if(tracking!=1) WeightAverageGreenFunc(comm_parent);
+	if(tracking==0 && rank==0) { 
       for (i = 0; i < NCisAjs; i++) fprintf(FileCisAjs, "% .18e  % .18e 0.0 ", creal(PhysCisAjs[i]), cimag(PhysCisAjs[i]));
       fprintf(FileCisAjs, "\n");
     }
+
     StartTimer(25);//DEBUG
 #ifdef _DEBUG_DETAIL
     printf("Debug: step %d, SROpt.\n", step);
 #endif
+
     WeightAverageSROpt(comm_parent);
+
     StopTimer(25);
     if(sAll==1) ReduceCounter(comm_child2);
     StopTimer(21);
@@ -855,7 +860,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     printf("Debug: step %d, AverageWE.\n", step);
 #endif
     WeightAverageWE(comm_parent);
-    if(tracking==0) WeightAverageGreenFunc(comm_parent);
+    if(tracking!=1) WeightAverageGreenFunc(comm_parent);
     if(tracking==0 && rank==0) {
       for (i = 0; i < NCisAjs; i++) fprintf(FileCisAjs, "% .18e  % .18e 0.0 ", creal(PhysCisAjs[i]), cimag(PhysCisAjs[i]));
       fprintf(FileCisAjs, "\n");
@@ -953,7 +958,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     printf("Debug: step %d, AverageWE.\n", step);
 #endif
     WeightAverageWE(comm_parent);
-    if(tracking==0) WeightAverageGreenFunc(comm_parent);
+    if(tracking!=1) WeightAverageGreenFunc(comm_parent);
     if(tracking==0 && rank==0) {
       for (i = 0; i < NCisAjs; i++) fprintf(FileCisAjs, "% .18e  % .18e 0.0 ", creal(PhysCisAjs[i]), cimag(PhysCisAjs[i]));
       fprintf(FileCisAjs, "\n");
@@ -1310,7 +1315,7 @@ void outputData() {
     /* zvo_out.dat */
     //fprintf(FileOut, "% .18e % .18e  % .18e % .18e %.18e %.18e\n", creal(Etot),cimag(Etot), creal(Etot2), creal((Etot2 - Etot*Etot)/(Etot*Etot)),creal(Sztot),creal(Sztot2));
     //fprintf(FileOut, "% .18e % .18e  % .18e % .18e %.18e %.18e\n", creal(Etot),cimag(Etot), creal(Etot2), creal((Etot2 - Etot*Etot)/(Etot*Etot)),creal(Sztot),creal(Dbtot));
-    fprintf(FileOut, "% .18e % .18e  % .18e % .18e %.18e %.18e\n", creal(Etot), Rt, Rty, theta, thetay, phi, phiy, Dbtot);
+    fprintf(FileOut, "%.18e %.18e %.18e %.18e %.18e %.18e %.18e %.18e\n", creal(Etot), Rt, Rty, theta, thetay, phi, phiy, Dbtot);
     /* zvo_var.dat */
     if (FlagBinary == 0) { /* formatted output*/
       fprintf(FileVar, "% .18e % .18e 0.0 % .18e % .18e 0.0 ", creal(Etot), cimag(Etot), creal(Etot2), cimag(Etot2));
