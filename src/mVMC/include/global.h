@@ -179,6 +179,7 @@ double Rt, Rty; /* magnitude of the sum of the nearest-neighbour expectations */
 double theta, thetay; /* phase of the sum of the nearest-neighbour expectations */
 double factor, factor2; /*used in Runge-Kutta*/
 int dim; /* dimension of the system */
+int psame; 
 int gf=1; /* dictates if Green's functions are calculated during real-time evolution */
 int tracking; /* =0 means normal simulation, =1 tracks the inputted current */ 
 int carrierx, carriery; /*=0 is sin, =1 is cos*/

@@ -633,6 +633,7 @@ int ReadDefFileNInt(char *xNameListFile, MPI_Comm comm) {
   carrierx = bufInt[Idxcarrierx];
   carriery = bufInt[Idxcarriery];
   dim = bufInt[Idxdim];
+  psame = bufInt[Idxpsame];
   sAll = bufInt[IdxsAll];
   scalefactorx = bufDouble[Idxscalefactorx];
   scalefactory = bufDouble[Idxscalefactory];
@@ -1495,6 +1496,7 @@ void SetDefaultValuesModPara(int *bufInt, double *bufDouble) {
   bufInt[Idxcarrierx] = 0;
   bufInt[Idxcarriery] = 0;
   bufInt[Idxdim] = 2;
+  bufInt[Idxpsame] = 0;
   bufInt[IdxsAll] = 1;
   bufDouble[Idxscalefactorx] = 1.0;
   bufDouble[Idxscalefactory] = 1.0;
@@ -1592,6 +1594,8 @@ int GetInfoFromModPara(int *bufInt, double *bufDouble) {
               bufInt[Idxcarriery] = (int) dtmp;
             } else if (CheckWords(ctmp, "dim") == 0) {
               bufInt[Idxdim] = (int) dtmp;
+            } else if (CheckWords(ctmp, "psame") == 0) {
+              bufInt[Idxpsame] = (int) dtmp;
             } else if (CheckWords(ctmp, "2Sz") == 0) {
               bufInt[Idx2Sz] = (int) dtmp;
               if (bufInt[Idx2Sz] == -1) {

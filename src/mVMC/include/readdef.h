@@ -84,7 +84,7 @@ enum ParamIdxInt{
 	IdxNQPTrans, IdxNOneBodyG, IdxNTwoBodyG,
   IdxNTwoBodyGEx, IdxNInterAll, IdxNQPOptTrans,
   IdxSROptCGMaxIter, IdxpropGF, Idxtracking,
-  Idxcarrierx, Idxcarriery, Idxdim,
+  Idxcarrierx, Idxcarriery, Idxdim, Idxpsame,
   Idxscalefactorx, Idxscalefactory,
   IdxNBF,IdxNrange, IdxNNz, Idx2Sz, IdxNCond,
   ParamIdxInt_End

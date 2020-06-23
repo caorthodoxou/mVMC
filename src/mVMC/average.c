@@ -243,9 +243,9 @@ void weightAverageReduce_fcmp(int n, double  complex *vec, MPI_Comm comm) {
 	    #pragma loop noalias
 		for(i=0;i<n;i++) vec[i] = buf[i] * invW/((double)size);
         nnsum = 0.0 + 0.0*I;
-        if(dim==1){
+        if(dim==1 || psame==1){
           for(i=0;i<NCisAjs;i++) nnsum += vec[i];
-        }else if(dim==2){
+        }else if(dim==2 && psame==0){
           nnsumy = 0.0 + 0.0*I;
           for(i=0;i<2*Nsite;i++){
             ni = 2*i;
@@ -272,9 +272,9 @@ void weightAverageReduce_fcmp(int n, double  complex *vec, MPI_Comm comm) {
     for(i=0;i<n;i++) vec[i] *= invW;
 	if(nncalc==1){
       nnsum = 0.0 + 0.0*I;
-      if(dim==1){
+      if(dim==1 || psame==1){
         for(i=0;i<NCisAjs;i++) nnsum += vec[i];
-      }else if(dim==2){
+      }else if(dim==2 && psame==0){
         nnsumy = 0.0 + 0.0*I;
         for(i=0;i<2*Nsite;i++){
           ni = 2*i;

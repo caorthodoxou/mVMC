@@ -575,13 +575,13 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
   double cphiy[4*NSROptItrStep];
 
   if(tracking==1){
-    if(dim==1){
+    if(dim==1 || psame==1){
       FILE *fptrack = fopen("tracking_data.dat", "r");
       for(i=0;i<4*NSROptItrStep;i++) fscanf(fptrack, "%lf", &(current[i]));
       fclose(fptrack);
       for(i=0;i<4*NSROptItrStep;i++) current[i] *= scalefactorx;
     }
-    else if(dim==2){
+    else if(dim==2 && psame==0){
       FILE *fptrack = fopen("tracking_data_x.dat", "r");
       for(i=0;i<4*NSROptItrStep;i++) fscanf(fptrack, "%lf", &(current[i]));
       fclose(fptrack);
@@ -598,7 +598,7 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
     FILE *phitrack = fopen("phi_fitted.dat", "r");
     for(i=0;i<4*NSROptItrStep;i++) fscanf(phitrack, "%lf", &(cphi[i]));
     fclose(phitrack);
-    if(dim==2){
+    if(dim==2 && psame==0){
       FILE *phitracky = fopen("phi_fitted_y.dat", "r");
       for(i=0;i<4*NSROptItrStep;i++) fscanf(phitracky, "%lf", &(cphiy[i]));
       fclose(phitracky);
@@ -641,14 +641,14 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
 	  VMCMainCal(comm_child1);
 	  WeightAverageGreenFunc(comm_parent);
       Rstage = current[4*step];
-      if(dim==2) Rstagey = currenty[4*step];
+      if(dim==2 && psame==0) Rstagey = currenty[4*step];
 	  CalcPhase();
 	  nncalc = 0;
     }
 
     if(tracking==2){
       phi = cphi[4*step];
-      if(dim==2) phiy = cphiy[4*step];
+      if(dim==2 && psame==0) phiy = cphiy[4*step];
       WriteToTrans2();
     }
 
@@ -741,14 +741,14 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
       VMCMainCal(comm_child1);
       WeightAverageGreenFunc(comm_parent);
       Rstage = current[4*step + 1];
-      if(dim==2) Rstagey = currenty[4*step + 1];
+      if(dim==2 && psame==0) Rstagey = currenty[4*step + 1];
       CalcPhase();
       nncalc = 0;
     }
 
     if(tracking==2){
       phi = cphi[4*step + 1];
-      if(dim==2) phiy = cphiy[4*step + 1];
+      if(dim==2 && psame==0) phiy = cphiy[4*step + 1];
       WriteToTrans2();
     }
 
@@ -837,14 +837,14 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
       VMCMainCal(comm_child1);
       WeightAverageGreenFunc(comm_parent);
       Rstage = current[4*step + 2];
-      if(dim==2) Rstagey = currenty[4*step + 2];
+      if(dim==2 && psame==0) Rstagey = currenty[4*step + 2];
       CalcPhase();
       nncalc = 0;
     }
 
     if(tracking==2){
       phi = cphi[4*step + 2];
-      if(dim==2) phiy = cphiy[4*step + 2];
+      if(dim==2 && psame==0) phiy = cphiy[4*step + 2];
       WriteToTrans2();
     }
 
@@ -935,14 +935,14 @@ int VMCParaOpt2(MPI_Comm comm_parent, MPI_Comm comm_child1, MPI_Comm comm_child2
       VMCMainCal(comm_child1);
       WeightAverageGreenFunc(comm_parent);
       Rstage = current[4*step + 3];
-      if(dim==2) Rstagey = currenty[4*step + 3];
+      if(dim==2 && psame==0) Rstagey = currenty[4*step + 3];
       CalcPhase();
       nncalc = 0;
     }
 
     if(tracking==2){
       phi = cphi[4*step + 3];
-      if(dim==2) phiy = cphiy[4*step + 3];
+      if(dim==2 && psame==0) phiy = cphiy[4*step + 3];
       WriteToTrans2();
     }
 
@@ -1166,7 +1166,7 @@ void CalcPhase() {
   hopping = cexp(I*phi);
   //printf("phi=%f, hopping=%f+%fi\n",phi,creal(hopping),cimag(hopping));
 
-  if(dim==1){
+  if(dim==1 || psame==1){
     for(i=0;i<NTransfer;i++){
       if(i%2==0){
         ParaTransfer[i] = InitTransfer[i]*hopping;
@@ -1174,7 +1174,8 @@ void CalcPhase() {
         ParaTransfer[i] = InitTransfer[i]*conj(hopping);
       }
     }
-  }else if(dim==2){
+    if(psame==1) phiy = phi;
+  }else if(dim==2 && psame==0){
     Rty = cabs(nnsumy);
     thetay = carg(nnsumy);
     if(Rt==0.0){ 
@@ -1258,7 +1259,7 @@ void WriteToTrans2() {
   double complex hopping, hoppingy;
 
   hopping = cexp(I*phi);
-  if(dim==1){
+  if(dim==1 || psame==1){
     for(i=0;i<NTransfer;i++){
       if(i%2==0){
         ParaTransfer[i] = InitTransfer[i]*hopping;
@@ -1266,7 +1267,7 @@ void WriteToTrans2() {
         ParaTransfer[i] = InitTransfer[i]*conj(hopping);
       }
     }
-  }else if(dim==2){
+  }else if(dim==2 && psame==0){
     hoppingy = cexp(I*phiy);
 
     for(i=0;i<2*Nsite;i++){
